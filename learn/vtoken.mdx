@@ -1,0 +1,76 @@
+---
+title: "vToken"
+description: "The base vault share. Deposit USDC, earn fixed yield and exchange points."
+icon: "circle-dollar-to-slot"
+---
+
+## What Is a vToken
+
+A vToken is a vault share. Each vault pairs a market maker with one or more perp DEXes. You deposit USDC, receive vToken shares, and earn two things:
+
+1. **Yield** — the market maker borrows your capital and returns value through either a fixed rate or a performance-fee split
+2. **Exchange points** — the strategy's activity generates points, distributed to you based on how many vTokens you held and for how long
+
+One vToken per vault. Different vaults have different market makers, exchanges, and rates.
+
+<Info>
+vToken is the simplest way to use ArcX. You earn yield and points without trading or managing anything. Just deposit and hold.
+</Info>
+
+---
+
+## Deposit
+
+Deposit USDC into a vault. You receive vToken shares at the current <Tooltip tip="Net Asset Value. Per-share USDC value of the vault.">NAV</Tooltip>:
+
+$$\text{shares} = \frac{\text{deposit amount}}{\text{NAV}}$$
+
+First deposit into an empty vault mints shares 1:1 with USDC. After that, shares are priced by NAV.
+
+---
+
+## Yield
+
+Yield comes from the market maker borrowing vault capital and returning value through either a fixed rate or a performance-fee split. NAV tracks that value over time.
+
+NAV only reflects hard assets (USDC value). It does not price in points — points are tracked separately through credits.
+
+---
+
+## Credits and Points
+
+Your vToken accrues **credits** while you hold it — the longer you hold and the more you hold, the bigger your share of points. Credits are tracked automatically on-chain. No oracle, nothing to claim manually.
+
+Each week, the exchange delivers points. Those points are split among credit holders proportional to their share.
+
+<Info>
+Hold earlier, earn more. Early weeks are locked in and cannot be diluted by later depositors.
+</Info>
+
+![Weekly point distribution for vToken holders](/images/vtoken-weekly-distribution.png)
+
+If you buy vTokens on secondary or receive them via transfer, your credit counter starts from zero. The previous holder keeps their credits.
+
+See [Credit Mathematics](/deep-dives/credit-mathematics) for the formula.
+
+---
+
+## Withdrawal
+
+Withdrawals depend on two timing constraints: **lock-in** and **unwinding**.
+
+<Steps>
+  <Step title="Lock-in">
+    Operators usually need deposits to stay on the exchange for a minimum period so they can put the capital to work. Because of that, each vToken has a global lock-in window.
+
+    If the lock-in is 3 days, then the withdrawable amount is total supply minus deposits made in the last 3 days. During this lock-in period, your vTokens are **not** burned, and you continue earning yield and points.
+  </Step>
+  <Step title="Unwinding">
+    Once your position is withdrawable, the operator still needs time to unwind exchange positions and return capital to the vault contract. Your vTokens are burned during this unwinding period.
+  </Step>
+  <Step title="Withdraw">
+    After unwinding completes, the USDC is available to withdraw from the vault.
+  </Step>
+</Steps>
+
+You can find the current lock-in time and unwinding time on the market page.

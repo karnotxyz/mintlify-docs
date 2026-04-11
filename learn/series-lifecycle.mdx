@@ -1,0 +1,31 @@
+---
+title: "Series Lifecycle"
+description: "Each vToken can have multiple series. Every series has a fixed maturity date and its own ST and EPT tokens."
+icon: "clock"
+---
+
+A **series** is a fixed-maturity market built on top of a vToken.
+
+Each vToken can have multiple series over time. Every series has:
+
+- a fixed **maturity date**
+- its own **ST**
+- its own **EPT**
+
+ST and EPT only apply to that specific series. When the series reaches maturity, that series stops accruing new time-based exposure.
+
+## Before Maturity
+
+Before maturity, users can:
+
+- hold **vToken** for combined yield and points exposure
+- buy **ST** for fixed-yield exposure until maturity
+- buy **EPT** for leveraged points exposure until maturity
+
+## At Maturity
+
+At maturity:
+
+- **ST** redeems back into vToken
+- **EPT** stops earning new exposure for that series and can be used to claim PointsTokens based on accrued credits
+- **vToken** continues as the base vault share

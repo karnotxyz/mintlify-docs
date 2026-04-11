@@ -1,0 +1,93 @@
+---
+title: "Trust Model & Security"
+description: "What is on-chain today, where ArcX still relies on off-chain components, and what risks users are actually taking."
+icon: "shield"
+---
+
+ArcX is designed so that asset ownership, token balances, series settlement, and credit computation happen on-chain. But users should still understand where trust exists today and what risks remain.
+
+Two high-level notes:
+
+- **Audits:** ArcX contracts are intended to be audited, and reports will be shared publicly when available.
+- **Source availability:** Contracts are closed source at the beginning. They will be opened up over time once the system has seen enough production use, confidence, and battle testing.
+
+---
+
+## vToken
+
+The **vToken** contracts are on-chain and self-custodial.
+
+- user balances, transfers, supply, and NAV all live on-chain
+- credit computation also happens on-chain
+- ArcX does not take custody of user funds inside the vToken system
+
+Today, ArcX uses [**Wildcat**](https://docs.wildcat.finance/) to lend capital to market makers. The movement of funds from Starknet into Wildcat is handled through smart contracts, not through ArcX-controlled wallets.
+
+That means ArcX does not become the custodian of funds during the lending flow. But users are still taking **borrower default risk** through the underlying market maker relationship.
+
+ArcX partners with market makers and lists them on the platform, but ArcX does not guarantee borrower performance. If a market maker fails to repay or defaults on its borrowing obligations, that risk ultimately sits with the users who chose to allocate capital to that vToken.
+
+Users should treat a vToken as both:
+
+- an on-chain self-custodial position
+- an economic exposure to the creditworthiness and execution quality of the underlying market maker
+
+---
+
+## ST and EPT
+
+All **ST** and **EPT** contracts are on-chain.
+
+The core contract that handles:
+
+- series creation
+- splitting vToken into ST + EPT
+- recombining ST + EPT
+- order settlement
+- redemption
+
+also lives on-chain.
+
+ArcX does run an off-chain orderbook service to find the best matchable orders. That off-chain component exists because smart contracts cannot do unbounded search over all open orders.
+
+But once the service proposes a match set, the orders are checked on-chain against the user's constraints.
+
+That means the on-chain contracts verify that execution remains within:
+
+- the APR bounds the user set
+- the slippage bounds the user set
+
+So ArcX cannot simply route user orders to arbitrary prices or drain funds through the matching service. The off-chain component helps find candidate matches, but settlement and constraints are enforced on-chain.
+
+---
+
+## Points Oracle and Custody
+
+Points are the main place where ArcX still depends on an off-chain trust boundary.
+
+Today, ArcX custodies points either:
+
+- in an ArcX-controlled exchange account, or
+- together with the market maker on the relevant exchange
+
+ArcX then acts as the oracle to the on-chain contracts by reporting how many points were received, so that PointsTokens can be minted and distributed to vToken and EPT holders.
+
+This means users are trusting ArcX to report the correct number of points earned off-chain.
+
+Over time, ArcX plans to reduce this trust requirement by:
+
+- using independent third-party auditors to verify reported point balances, or
+- integrating more closely with exchanges so points can be attributed to ArcX users more directly
+
+---
+
+## What Users Should Actually Check
+
+Before allocating capital, users should evaluate:
+
+- the market maker behind the vToken
+- the Wildcat borrowing setup and borrower risk
+- the terms of the specific series they are trading
+- the current points-oracle trust assumptions
+
+The smart-contract layer makes custody and settlement transparent. It does not remove the need to evaluate counterparty risk, operational risk, and oracle trust.

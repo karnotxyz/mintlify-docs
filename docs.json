@@ -1,122 +1,127 @@
 {
   "$schema": "https://mintlify.com/docs.json",
   "theme": "mint",
-  "name": "Mint Starter Kit",
-  "colors": {
-    "primary": "#16A34A",
-    "light": "#07C983",
-    "dark": "#15803D"
+  "name": "ArcX",
+  "description": "ArcX wraps perp DEX strategies into a vault token that earns fixed yield and exchange points. Split into ST and EPT for isolated exposure.",
+  "favicon": "/favicon.png",
+  "logo": {
+    "light": "/logo/arc-logo.png",
+    "dark": "/logo/arc-logo.png",
+    "href": "https://arcx.trade"
   },
-  "favicon": "/favicon.svg",
+  "colors": {
+    "primary": "#40C873",
+    "light": "#4DD88A",
+    "dark": "#40C873"
+  },
+  "background": {
+    "color": {
+      "light": "#FFFFFF",
+      "dark": "#0A0A0A"
+    }
+  },
+  "appearance": {
+    "default": "dark"
+  },
+  "fonts": {
+    "heading": {
+      "family": "Inter",
+      "weight": 600
+    },
+    "body": {
+      "family": "Inter",
+      "weight": 400
+    }
+  },
+  "mermaid": {},
+  "styling": {
+    "eyebrows": "breadcrumbs",
+    "latex": true,
+    "codeblocks": "dark"
+  },
+  "navbar": {
+    "links": [
+      {
+        "label": "Twitter",
+        "href": "https://x.com/arcxtrade"
+      }
+    ],
+    "primary": {
+      "type": "button",
+      "label": "Launch App",
+      "href": "https://app.arcx.trade"
+    }
+  },
+  "contextual": {
+    "options": [
+      "copy",
+      "view",
+      "claude",
+      "chatgpt"
+    ]
+  },
   "navigation": {
     "tabs": [
       {
-        "tab": "Guides",
+        "tab": "Learn",
         "groups": [
           {
-            "group": "Getting started",
+            "group": "Getting Started",
             "pages": [
               "index",
-              "quickstart",
-              "development"
+              "learn/protocol-overview",
+              "learn/series-lifecycle",
+              "learn/trust-model-and-security"
             ]
           },
           {
-            "group": "Customization",
+            "group": "Tokens",
             "pages": [
-              "essentials/settings",
-              "essentials/navigation"
+              "learn/vtoken",
+              "learn/strategy-token",
+              "learn/expected-points-token",
+              "learn/points-token"
             ]
           },
           {
-            "group": "Writing content",
+            "group": "Using ArcX",
             "pages": [
-              "essentials/markdown",
-              "essentials/code",
-              "essentials/images",
-              "essentials/reusable-snippets"
-            ]
-          },
-          {
-            "group": "AI tools",
-            "pages": [
-              "ai-tools/cursor",
-              "ai-tools/claude-code",
-              "ai-tools/windsurf"
+              "learn/user-guide",
+              "learn/orderbook-guide",
+              "learn/pendle-comparison"
             ]
           }
         ]
       },
       {
-        "tab": "API reference",
+        "tab": "Deep Dives",
         "groups": [
           {
-            "group": "API documentation",
+            "group": "Technical Analysis",
             "pages": [
-              "api-reference/introduction"
+              "deep-dives/credit-mathematics",
+              "deep-dives/orderbook-mechanics",
+              "deep-dives/ept-pricing"
             ]
-          },
+          }
+        ]
+      },
+      {
+        "tab": "Reference",
+        "groups": [
           {
-            "group": "Endpoint examples",
+            "group": "Reference",
             "pages": [
-              "api-reference/endpoint/get",
-              "api-reference/endpoint/create",
-              "api-reference/endpoint/delete",
-              "api-reference/endpoint/webhook"
+              "reference/glossary-and-reference"
             ]
           }
         ]
       }
-    ],
-    "global": {
-      "anchors": [
-        {
-          "anchor": "Documentation",
-          "href": "https://mintlify.com/docs",
-          "icon": "book-open-cover"
-        },
-        {
-          "anchor": "Blog",
-          "href": "https://mintlify.com/blog",
-          "icon": "newspaper"
-        }
-      ]
-    }
-  },
-  "logo": {
-    "light": "/logo/light.svg",
-    "dark": "/logo/dark.svg"
-  },
-  "navbar": {
-    "links": [
-      {
-        "label": "Support",
-        "href": "mailto:hi@mintlify.com"
-      }
-    ],
-    "primary": {
-      "type": "button",
-      "label": "Dashboard",
-      "href": "https://dashboard.mintlify.com"
-    }
-  },
-  "contextual": {
-    "options": [
-     "copy",
-     "view",
-     "chatgpt",
-     "claude",
-     "perplexity",
-     "mcp",
-     "cursor",
-     "vscode"
-   ]
+    ]
   },
   "footer": {
     "socials": {
-      "x": "https://x.com/mintlify",
-      "github": "https://github.com/mintlify",
-      "linkedin": "https://linkedin.com/company/mintlify"
+      "x": "https://x.com/arcxtrade"
     }
   }
 }

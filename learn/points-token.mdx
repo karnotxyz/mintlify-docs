@@ -1,0 +1,44 @@
+---
+title: "PointsToken"
+description: "1:1 representation of exchange points. Persists across series. Burn for airdrop tokens after TGE."
+icon: "gift"
+---
+
+## What Is a PointsToken
+
+Each supported perp DEX has its own PointsToken, representing that exchange's loyalty points 1:1.
+
+Additional PointsTokens are created as new exchanges are integrated. One PointsToken exists per exchange, shared across all vaults and series on that exchange.
+
+---
+
+## How Claiming Works
+
+As points are distributed on the exchange each week, holders with accumulated credits can claim their share as PointsTokens. Both vToken and EPT holders earn credits and can claim.
+
+1. Weekly points are reported for the vault
+2. You claim based on your credit share
+
+---
+
+## PointsTokens Persist Across Series
+
+Unlike ST and EPT, which are created fresh for each series, PointsTokens accumulate. Your PT from one series and your PT from another are the **same token**. They stack in your wallet.
+
+PointsTokens are standard ERC20 tokens. You can hold, transfer, or trade them freely.
+
+---
+
+## Post-TGE: Burn for Airdrop Tokens
+
+When an exchange conducts its <Tooltip tip="Token Generation Event. When a perp DEX launches its token and distributes airdrops to points holders.">TGE</Tooltip>:
+
+1. The exchange distributes airdrop tokens
+2. A conversion rate is set based on total airdrop tokens and total PointsToken supply
+3. You burn your PointsTokens to receive airdrop tokens at that rate
+
+**Example:** Assume the points token is called PT. You hold 1,000 PT. The exchange airdrops 50,000 tokens against a total PT supply of 100,000.
+
+$$\text{conversion rate} = \frac{50{,}000 \text{ airdrop tokens}}{100{,}000 \text{ PT}} = 0.5$$
+
+You burn 1,000 PT and receive 500 airdrop tokens.

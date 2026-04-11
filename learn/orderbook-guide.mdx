@@ -1,0 +1,149 @@
+---
+title: "Orderbook Guide"
+description: "How to think about APR, choose a series, and place ST or EPT orders with the right intuition."
+icon: "chart-line"
+---
+
+Before placing an order, start with two things:
+
+1. pick the **series** you want to trade
+2. decide whether you want **principal + yield** exposure through **ST** or **points** exposure through **EPT**
+
+The same **vToken** can have multiple series open at different maturity dates, and each series has its own **ST/vToken** and **EPT/vToken** orderbooks (though economically they are the same underlying book, as explained below).
+
+---
+
+## What the Orderbook Is
+
+ArcX runs an APR-priced orderbook for two series-specific tokens:
+
+- **ST** trades against **vToken**
+- **EPT** trades against **vToken**
+
+You are not placing orders in raw dollar price. You are placing orders in **APR**.
+
+That matters because ST and EPT are both time-dependent claims. As maturity gets closer, the token amounts implied by the same economic deal change. APR is the stable way to express the deal you want.
+
+---
+
+## Why APR Is the Quote Unit
+
+If the book were quoted directly in ST price or EPT price, every order would appear to drift mechanically as time passed.
+
+For example, imagine you want the same annualized ST deal for a series with 60 days left and then again with 10 days left.
+
+- with **60 days** left, that APR implies a larger ST amount per vToken
+- with **10 days** left, that same APR implies a smaller ST amount per vToken
+
+If orders were quoted directly in token price, the same economic intention would have to be constantly repriced as maturity approached.
+
+APR avoids that problem.
+
+When you place an APR-based order, you are saying:
+
+- what annualized return you want on the **ST** side, or
+- what annualized deal you are willing to accept on the **EPT** side
+
+The token amounts shown in the book can still drift with time, but the APR keeps the economic intent stable.
+
+---
+
+## How to Think About APR by Side
+
+When placing a **limit order**, the cleanest way to think about APR is:
+
+| Order type | What your APR means |
+|---|---|
+| **Buy ST** | The **minimum APR** you want in exchange for locking your vTokens into the principal + yield side |
+| **Sell ST** | You are selling ST at a discount, so the APR is the **maximum discount / worst yield deal** you are willing to accept |
+| **Buy EPT** | You are paying upfront for points, so the APR is the **maximum APR** you are willing to give the other side |
+| **Sell EPT** | You are selling the points side, so the APR is the **minimum APR** the buyer must pay to get equivalent EPT exposure |
+
+In plain English:
+
+| Side | Better for you |
+|---|---|
+| **Buy ST** | Higher APR |
+| **Sell ST** | Lower APR |
+| **Buy EPT** | Lower APR |
+| **Sell EPT** | Higher APR |
+
+That is the main directional rule to keep in mind when reading the book.
+
+---
+
+## How to Reason About Price
+
+The book is quoted in APR, but users still need a simple way to think about token price:
+
+- **ST** trades below **1 vToken**
+- **EPT** trades at `price per point × points received from 1 vToken until maturity` in an efficient market, and as an EPT buyer you want it to trade below that value so you have room to profit
+
+**As maturity gets closer, the same APR implies different ST and EPT amounts.**
+
+That means:
+
+- a resting order can display different token size later even if the order itself has not changed
+- the same APR at different times does **not** imply the same **absolute** return
+- percentage return stays comparable, but the remaining notional opportunity shrinks as maturity approaches
+
+---
+
+## Market Orders vs Limit Orders
+
+### Use a market order when:
+
+- you want immediate execution
+- enough compatible liquidity is already resting in the book
+- the current effective APR is acceptable for your full size
+- you are comfortable setting slippage tolerance in the UI
+
+### Use a limit order when:
+
+- liquidity is thin or taking available depth would move your APR too much
+- you care about a specific APR more than immediate execution
+
+---
+
+## ST and EPT Are the Same Orderbook!
+
+**Although ST and EPT may look like two different books in the UI, the reality is that they are the same underlying orderbook.**
+
+The same underlying vToken value can be split into:
+
+$$
+1 \text{ vToken} = 1 \text{ ST} + 1 \text{ EPT}
+$$
+
+That means pricing either **ST** or **EPT** in vTokens automatically decides the price of the other side.
+
+Or in other words:
+
+- **1 vToken** can always be split into **1 ST + 1 EPT**
+- **1 ST + 1 EPT** can always be combined back into **1 vToken**
+
+An order on one side also implies an economically equivalent order on the other side:
+
+- a **Buy ST** is also a **Sell EPT**
+- a **Buy EPT** is also a **Sell ST**
+
+For example, a **Buy ST** can match directly with a **Sell ST**. But it can also be satisfied by splitting vToken into **ST + EPT** and selling the **EPT** side. The same logic works in reverse on the EPT side too.
+
+See [Orderbook Mechanics](/deep-dives/orderbook-mechanics) for the full matching logic.
+
+---
+
+## Some More Things to Know About the Orderbook
+
+- Limit orders can be partially filled
+- Cancelling an order only unlocks the unmatched remainder
+- Market orders let you set slippage tolerance in the UI so the final result does not drift too far from the quoted APR
+- You cannot match against your own resting orders
+
+---
+
+## Next Steps
+
+- Read the [User Guide](/learn/user-guide) for the step-by-step trading flow
+- Read [EPT Pricing](/deep-dives/ept-pricing) for points-side return intuition
+- Read [Orderbook Mechanics](/deep-dives/orderbook-mechanics) for the full math

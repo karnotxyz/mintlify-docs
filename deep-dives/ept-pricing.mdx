@@ -1,0 +1,83 @@
+---
+title: "EPT Pricing"
+description: "How ST and EPT are priced, why the returns frame matters, and what drives the ST discount."
+icon: "chart-line"
+---
+
+EPT price depends on one equation. This page walks through that equation and what drives it.
+
+If you want the full matching math behind ST/EPT pricing, read [Orderbook Mechanics](/deep-dives/orderbook-mechanics).
+
+## How ST and EPT Are Priced
+
+**NAV** is the per-share USDC value of the vault. It grows as the market maker returns value through the market's configured model, whether that is a fixed rate or a performance-fee split. NAV does not respond to orderbook activity.
+
+**ST** and **EPT** are the yield and points components of a vToken. They trade on the orderbook priced in vTokens.
+
+EPT buyers pay for the points portion of the vToken. Whatever they pay, the remainder is what ST is worth. If ST trades at \$0.98 near a NAV of 1.00, the market is valuing EPT at roughly \$0.02. The more someone pays for EPT, the cheaper ST gets — and vice versa.
+
+The matching engine keeps this relationship tight. When an ST buy and EPT buy arrive together, the engine mints — splitting vTokens into ST + EPT. When an ST sell and EPT sell arrive together, the engine burns — recombining into vTokens.
+
+---
+
+## Returns Framing
+
+The natural question is "is \$0.02 too expensive?" The better question: **what is the implied return?**
+
+EPT is a claim on future points. Its value depends on how many points you earn and what those points are worth at TGE.
+
+### Worked Example
+
+You use 5 vTokens to buy 250 EPT at \$0.02 each during a 60-day series:
+
+| Step | What happens |
+|---|---|
+| **Buy** | 250 EPT for 5 vTokens (\$5 at NAV) |
+| **Hold** | You accrue credits over the series. Your credit share earns 55 points. |
+| **Claim** | Series matures. Let's assume a 10% EPT fee (actual value can be seen on the market page). You receive 50 PointsTokens. |
+| **TGE** | Each point is worth \$0.20 at TGE. You burn 50 PointsTokens for \$10. |
+| **Return** | \$10 out on \$5 in = **100% return over 60 days** |
+
+## Leverage and Price
+
+### EPT Price Decay
+
+If EPT is \$0.02 with 8 weeks left, you earn credits for all 8 weeks. If EPT is still \$0.02 with 2 weeks left, you earn credits for just 2 weeks. Same price, very different return.
+
+In practice, EPT price decays as the series progresses because fewer credits remain to be earned. As mentioned in [Orderbook Mechanics](/deep-dives/orderbook-mechanics), this is why orders are priced in APR and not absolute price, since APR remains stable as time passes.
+
+### Leverage Increases with Time for Same APR
+
+If APR remains the same and your size remains the same, EPT leverage increases as you get closer to maturity.
+
+For example, suppose you spend **100 vTokens** at **10% APR**:
+
+- with **1 year** left to maturity, that maps to about **1,100 EPT**
+- with **1 month** left to maturity, that maps to about **12,100 EPT**
+
+So the same 100 vTokens at the same APR can map to much larger EPT size as time remaining gets shorter.
+
+That is why leverage is not a fixed property of EPT price alone. It depends on both:
+
+- APR
+- time remaining
+
+And this is also why quoting the orderbook in APR is important: absolute token size changes with time, but APR stays stable.
+
+---
+
+## What Drives EPT Price
+
+| Factor | Effect on EPT Price |
+|---|---|
+| **Time remaining** | More time = more credits to earn = higher price |
+| **Expected points value** | Higher expected TGE value = higher price |
+| **Points demand** | More buyers on EPT orderbook = higher price |
+
+---
+
+## Credits
+
+EPT uses a smart credit-based system to calculate point distribution over time.
+
+See [Credit Mathematics](/deep-dives/credit-mathematics) for how credits work and how points are assigned across periods.

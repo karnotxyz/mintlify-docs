@@ -1,0 +1,243 @@
+---
+title: "Orderbook Mechanics"
+description: "APR pricing, token sizing, matching rules, and market-order mechanics for the ArcX orderbook."
+icon: "scale-balanced"
+---
+
+This page explains the math behind the ArcX orderbook.
+
+It covers:
+
+- why the book is quoted in **APR**
+- how **ST** and **EPT** prices are derived
+- how order sizes are interpreted
+- how same-asset and cross-asset matching works
+- how market orders, slippage, partial fills, and cancels behave
+
+---
+
+## Core Setup
+
+For all formulas below, let:
+
+- `APR` = the annualized rate quoted in the book, written in decimal form for the formulas on this page (for example, `10% = 0.10`)
+- `time remaining` = time left until series maturity, measured in years
+- `rt = APR × time remaining`
+
+`rt` is the time-adjusted term used throughout the orderbook math.
+
+---
+
+## Why the Orderbook Is Quoted in APR
+
+ST and EPT are both time-dependent claims.
+
+Even if the economic deal stays the same, the token amounts implied by that deal change as maturity approaches. If the book were quoted directly in token price, every resting order would appear to reprice over time.
+
+For example, imagine you want the same annualized ST deal for a series with 60 days left and then again with 10 days left.
+
+- with **60 days** left, that APR implies a larger ST amount per vToken
+- with **10 days** left, that same APR implies a smaller ST amount per vToken
+
+If orders were quoted directly in token price, the same economic intention would have to be constantly repriced as maturity approached.
+
+APR is the stable quote unit.
+
+That is why the orderbook stores economic intent in APR and derives token prices and sizes from `rt`.
+
+---
+
+## Core Pricing Formulas
+
+At a given `rt`, the implied prices in `vToken` terms are:
+
+$$\text{Price(ST in vToken)} = \frac{1}{1 + rt}$$
+
+$$\text{Price(EPT in vToken)} = \frac{rt}{1 + rt}$$
+
+The inverse “how much token do I get for 1 vToken?” views are:
+
+$$\text{ST per vToken} = 1 + rt$$
+
+$$\text{EPT per vToken} = \frac{1 + rt}{rt}$$
+
+These formulas already explain the directional intuition:
+
+- higher APR lowers ST price and raises EPT price
+- lower APR raises ST price and lowers EPT price
+
+---
+
+## Different Order Types
+
+There are four native order types:
+
+1. **Buy ST**
+2. **Sell ST**
+3. **Buy EPT**
+4. **Sell EPT**
+
+They are not all stored in the same raw unit, so it helps to reason in ST/EPT size.
+
+| Order type | ST/EPT size | User pays | User receives |
+|---|---|---|---|
+| **Buy ST** | `v × (1 + rt)` ST | `v` vToken | `v × (1 + rt)` ST |
+| **Sell ST** | `s` ST | `s` ST | `s / (1 + rt)` vToken |
+| **Buy EPT** | `v × (1 + rt) / rt` EPT | `v` vToken | `v × (1 + rt) / rt` EPT |
+| **Sell EPT** | `e` EPT | `e` EPT | `e × rt / (1 + rt)` vToken |
+
+---
+
+## ST and EPT Have the Same Orderbook
+
+Although ST and EPT may look like two different books in the UI, they are two views over the same underlying economic book.
+
+The core identity is:
+
+$$
+1 \text{ vToken} = 1 \text{ ST} + 1 \text{ EPT}
+$$
+
+That means pricing either **ST** or **EPT** in vTokens automatically decides the price of the other side.
+
+Or in other words:
+
+- **1 vToken** can always be split into **1 ST + 1 EPT**
+- **1 ST + 1 EPT** can always be combined back into **1 vToken**
+
+The core identities are:
+
+- **Buy ST** is economically equivalent to **Sell EPT**
+- **Buy EPT** is economically equivalent to **Sell ST**
+
+For example, a **Buy ST** can match directly with a **Sell ST**. But it can also be satisfied by splitting vToken into **ST + EPT** and selling the **EPT** side. The same logic works in reverse on the EPT side too.
+
+---
+
+## How to Reason About APR
+
+The practical direction table is:
+
+| Order type | Is higher APR better or worse? | Why |
+|---|---|---|
+| **Buy ST** | Higher is better | ST gets cheaper in `vToken` terms |
+| **Sell ST** | Lower is better | You receive more `vToken` per ST sold |
+| **Buy EPT** | Lower is better | EPT gets cheaper in `vToken` terms |
+| **Sell EPT** | Higher is better | You receive more `vToken` per EPT sold |
+
+This table is just the pricing formulas above expressed in user-facing terms.
+
+---
+
+## APR Checks During Order Matching
+
+Before two orders can match, their APRs must be compatible.
+
+### Same asset
+
+- **Buy ST** vs **Sell ST**: `sell APR >= buy APR`
+- **Buy EPT** vs **Sell EPT**: `buy APR >= sell APR`
+
+### Cross asset
+
+- **Buy EPT** vs **Buy ST**: `ept APR >= st APR`
+- **Sell ST** vs **Sell EPT**: `st APR >= ept APR`
+
+> The settlement APR is the **maker APR**, meaning the older resting order's APR.
+
+---
+
+## Slippage
+
+ArcX supports slippage protection on market orders.
+
+In the UI, users can set a slippage tolerance so their final market-order result does not drift too far from the quoted APR.
+
+If liquidity changes too much before execution, the order can fail instead of filling at a worse outcome than the user accepted.
+
+---
+
+## Partial Fills and Cancels
+
+### Limit orders
+
+Limit orders can be:
+
+- `OPEN`
+- `PARTIAL`
+- `FILLED`
+- `CANCELLED`
+
+If a limit order is partially filled:
+
+- only the matched portion settles
+- the unmatched remainder stays resting
+
+If you cancel:
+
+- only the unmatched remainder is unlocked
+- already matched amounts stay settled
+
+### Market orders
+
+Market orders do not leave a resting remainder.
+
+They either execute immediately as one bounded transaction or fail.
+
+---
+
+## Self-Match Prevention
+
+Users cannot match against their own resting orders.
+
+This is enforced both in the UI quote and in on-chain contracts.
+
+---
+
+## Worked Examples
+
+### Example 1: Buy ST
+
+Suppose:
+
+- raw size = `100 vToken`
+- APR = `10%`
+- time remaining = `1 year`
+
+Then:
+
+$$rt = 0.10$$
+
+$$\text{ST size} = 100 \times 1.10 = 110 \text{ ST}$$
+
+Interpretation:
+
+- you pay `100 vToken`
+- you receive `110 ST`
+
+### Example 2: Buy EPT
+
+Suppose:
+
+- raw size = `100 vToken`
+- APR = `10%`
+- time remaining = `1 year`
+
+Then:
+
+$$rt = 0.10$$
+
+$$\text{EPT size} = 100 \times \frac{1.10}{0.10} = 1100 \text{ EPT}$$
+
+Interpretation:
+
+- you pay `100 vToken`
+- you receive `1100 EPT`
+
+---
+
+## Related Reading
+
+- [Orderbook Guide](/learn/orderbook-guide) for user-facing order intuition
+- [EPT Pricing](/deep-dives/ept-pricing) for returns framing on the points side
+- [Credit Mathematics](/deep-dives/credit-mathematics) for how credits translate into points

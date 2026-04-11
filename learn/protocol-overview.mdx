@@ -1,0 +1,130 @@
+---
+title: "What is ArcX?"
+description: "ArcX wraps perp DEX strategies into a vault token that splits into separately tradeable yield and points exposure."
+icon: "book-open"
+---
+
+## The Problem
+
+Points farming on perp DEXes is capital-inefficient. You deposit capital, lock it in a strategy, earn points alongside yield, and hope for an airdrop. You can't sell the points pre-TGE, you can't separate the yield from the points, and you can't get leveraged exposure to either one independently.
+
+## The Solution
+
+We wrap perp DEX strategies into a **vToken** — a vault share that earns both fixed yield and exchange points. Hold it for the combined return, or use your vTokens to buy **ST** (yield) or **EPT** (points) on the orderbook.
+
+Points farmers buy EPT for leveraged points exposure. Yield seekers buy ST at a discount for fixed returns. Each user gets exactly the exposure they want, at a price set by the market.
+
+---
+
+## Who is ArcX For?
+
+<CardGroup cols={3}>
+  <Card title="Points Farmer" icon="chart-line">
+    Deposit \$100 for vTokens. Buy EPT on the orderbook. At \$0.02 per EPT, you end up holding **5,000 EPT** — 50x points leverage.
+  </Card>
+  <Card title="Yield Seeker" icon="vault">
+    EPT buyers pay for the points portion of a vToken, leaving ST available below NAV. You pick it up at a discount. The vault pays **12% net APR**. You earn the yield plus the discount.
+  </Card>
+  <Card title="Just Hold vToken" icon="wallet">
+    Earn yield and accrue points credits in one token. The simplest way to use ArcX.
+  </Card>
+</CardGroup>
+
+**Exit:** Sell your ST or EPT on the orderbook to receive vTokens. Withdraw vTokens for USDC.
+
+---
+
+## The Tokens
+
+<CardGroup cols={2}>
+  <Card title="vToken" icon="circle-dollar-to-slot" href="/learn/vtoken">
+    The base. Vault share that earns yield + points.
+  </Card>
+  <Card title="Strategy Token (ST)" icon="vault" href="/learn/strategy-token">
+    Principal + yield claim. Redeems back into vToken at maturity.
+  </Card>
+  <Card title="Expected Points Token (EPT)" icon="star" href="/learn/expected-points-token">
+    Points claim. Accrues credits. Can be used to claim PointsTokens every week.
+  </Card>
+  <Card title="PointsToken" icon="coins" href="/learn/points-token">
+    1:1 representation of exchange points. Burns for airdrop tokens at TGE.
+  </Card>
+</CardGroup>
+
+---
+
+## How It Works
+
+```mermaid
+flowchart LR
+    A["Deposit USDC"] --> B["Receive vToken"]
+    B --> C["Redeem for yield + points at any time"]
+    B --> D["Buy ST on ST/vToken orderbook"]
+    B --> E["Buy EPT on EPT/vToken orderbook"]
+    D --> F["Receive fixed yield at maturity"]
+    E --> G["Receive tokenized points every week for holding"]
+```
+
+<Steps>
+  <Step title="Deposit USDC">
+    Deposit USDC into a vault. You receive **vToken** shares at the current NAV. Your vToken earns fixed yield and accrues credits for points.
+  </Step>
+  <Step title="Trade (for power users)">
+    Use your vTokens to buy **EPT** (points leverage) or **ST** (discounted yield) on the orderbook.
+
+    This is for folks who want to sell points for fixed yield or buy points at a discount.
+  </Step>
+  <Step title="Redeem">
+    **vToken:** Redeem for the combined exposure. You keep both yield and points, but with lower exposure than someone who traded into pure ST or EPT.
+
+    **ST:** Redeems back into vToken at maturity.
+
+    **EPT:** Can be used to claim PointsTokens every week based on accrued credits.
+  </Step>
+</Steps>
+
+### Where Do Yield and Points Come From?
+
+When users deposit into a vault, that capital is packaged into **vToken** and lent out to professional market makers. Those market makers run strategies on perp DEXes and return value to the vault through either a fixed rate or a performance-fee split. That return flows back into the vault, and the **NAV** of the vToken tracks it over time.
+
+At the same time, those market maker strategies generate exchange points on the underlying venues. ArcX routes those points back to users.
+
+Yield and points are distributed differently:
+
+- **Yield** is reflected in vToken NAV. Your balance multiplied by NAV determines what your yield position is worth.
+- **Points** are distributed based on holding time, not just balance. Both vToken and EPT track user holding time through credits, and points are allocated based on that credit share.
+
+See [Credit Mathematics →](/deep-dives/credit-mathematics) for the details of how credits accrue and how points are split across users.
+
+---
+
+## Fees
+
+We charge two types of fees:
+
+- **vToken performance fee** — a cut of the yield and points distributed through the vToken.
+- **EPT leverage fee** — a fee on points received by EPT holders, charged for the leverage ArcX provides.
+
+Exact fees can vary by market. You can always see the current fee settings on the app.
+
+---
+
+## Series
+
+**vToken** behaves like a vault share. You can deposit and withdraw as long as you account for withdrawal delays and any lockup windows shown on the market page.
+
+**ST** and **EPT** are issued as part of fixed-maturity series.
+
+Each vToken can have multiple series over time. Every series has its own maturity date and its own **ST** and **EPT** tokens.
+
+Until maturity, ST and EPT let users isolate fixed-yield or leveraged-points exposure for that series. At maturity, ST redeems back into vToken, while EPT stops earning new exposure for that series and can be used to claim PointsTokens.
+
+See [Series Lifecycle](/learn/series-lifecycle) for details.
+
+---
+
+## Vaults at Launch
+
+Each vault pairs a professional market maker with one or more perp DEXes. The market maker borrows vault capital, runs their own trading strategies, and returns value to the vault through either a fixed rate or a performance-fee split. ArcX does not dictate or operate the trading — each market maker runs their own book.
+
+Each vault has its own vToken. ST and EPT derived from each vault are specific to that vault and series.
