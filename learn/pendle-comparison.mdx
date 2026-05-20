@@ -14,7 +14,7 @@ icon: "scale-balanced"
 |---|---|---|
 | **SY** (Standardized Yield) | **vToken** | Pendle wraps external yield sources. ArcX curates its own vaults (`vTokens`) today, with plans to expand to external vaults over time. |
 | **PT** (Principal Token) | **ST** (Strategy Token) | PT is just principal. ST is **principal + yield**. |
-| **YT** (Yield Token) | **EPT** (Expected Points Token) | YT is **interest + points**. EPT is **just points** — the yield has already been given to ST. |
+| **YT** (Yield Token) | **EPT** (Expected Points Token) | YT is **interest + rewards**. EPT is the **rewards side** — the yield has already been given to ST. |
 | Pendle AMM + orderbook | ST/vToken + EPT/vToken orderbook | Pendle supports both AMM and orderbook liquidity. ArcX uses an orderbook today and may add an AMM later if demand justifies it. |
 
 ## The Big Difference
@@ -24,16 +24,16 @@ The biggest difference is in what gets separated.
 Pendle splits a position into:
 
 - **PT** = principal
-- **YT** = interest + points
+- **YT** = interest + rewards
 
 ArcX splits a position into:
 
 - **ST** = principal + interest
-- **EPT** = points
+- **EPT** = rewards side
 
-ArcX isolates points into **EPT**, so points farmers do not need to pay for yield exposure they do not want.
+ArcX isolates the rewards side into **EPT**, so EPT buyers do not need to pay for yield exposure they do not want.
 
-**That gives points buyers higher leverage for the same capital.**
+**That gives EPT buyers higher leverage for the same capital.**
 
 ### Example
 
@@ -46,18 +46,18 @@ Assume a strategy generates:
 - **1 year to maturity**
 - **points priced at \$0.20 per point**
 
-In Pendle, the points buyer is buying **interest + points** together through YT. To get exposure to 1 point, they are also paying for the yield stream:
+In Pendle, the buyer is buying **interest + rewards** together through YT. To get exposure to 1 expected point reward, they are also paying for the yield stream:
 
 - Yield value: **\$5.00**
 - Point value: **\$0.20**
 - **Total paid = \$5.20**
 
-In ArcX, the points buyer is only buying the points side through EPT:
+In ArcX, the EPT buyer is only buying the rewards side:
 
 - Point value: **\$0.20**
 - **Total paid = \$0.20**
 
-So for the same capital, ArcX lets a points buyer get much more direct points exposure because they are not paying for the yield component.
+So for the same capital, ArcX lets an EPT buyer get more concentrated expected-reward exposure because they are not paying for the yield component.
 
 ---
 
@@ -65,7 +65,7 @@ So for the same capital, ArcX lets a points buyer get much more direct points ex
 
 | If you want to... | Pendle | ArcX |
 |---|---|---|
-| Earn fixed yield on a yield-bearing asset | Buy PT at a discount | Buy ST at a discount |
+| Get principal + yield exposure on a yield-bearing asset | Buy PT at a discount | Buy ST at a discount |
 | Get leveraged yield exposure | Buy YT | Not available |
-| Get leveraged pre-TGE points exposure | Possible, but leverage is lower for the same capital because YT also includes yield | Buy EPT on the orderbook |
-| Separate strategy PnL from points | Not possible | Buy ST or EPT independently |
+| Get pre-reward rewards-side exposure | Possible, but leverage is lower for the same capital because YT also includes yield | Buy EPT on the orderbook |
+| Separate strategy PnL from rewards | Not possible | Buy ST or EPT independently |

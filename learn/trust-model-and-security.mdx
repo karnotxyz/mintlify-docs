@@ -56,28 +56,29 @@ That means the on-chain contracts verify that execution remains within:
 
 - the APR bounds the user set
 - the slippage bounds the user set
+- the settlement constraints for the relevant ST, EPT, and vToken transfers
 
-So ArcX cannot simply route user orders to arbitrary prices or drain funds through the matching service. The off-chain component helps find candidate matches, but settlement and constraints are enforced on-chain.
+So ArcX cannot simply route user orders to arbitrary prices, force worse APRs, create invalid fills, or drain funds through the matching service. The off-chain component helps find candidate matches, but settlement and constraints are enforced on-chain.
 
 ---
 
-## Points Oracle and Custody
+## Credit Oracle and Reward Distribution
 
-Points are the main place where ArcX still depends on an off-chain trust boundary.
+Credits are computed on-chain, but the rewards side still depends on off-chain information and market maker reward delivery.
 
-Today, ArcX custodies points either:
+ArcX uses period weights to reflect relative reward contribution across credit periods. Those weights are submitted through an oracle process and are used to determine how many CreditTokens are minted for each period.
 
-- in an ArcX-controlled exchange account, or
-- together with the market maker on the relevant exchange
+The oracle does not assign rewards to individual users. It reports period weights, and the contracts apply those weights to on-chain credit balances.
 
-ArcX then acts as the oracle to the on-chain contracts by reporting how many points were received, so that PointsTokens can be minted and distributed to vToken and EPT holders.
+When rewards are shared, the relevant market maker funds the CreditToken distribution contract with rewards received for that strategy. CreditToken holders claim from that contract according to the contract logic.
 
-This means users are trusting ArcX to report the correct number of points earned off-chain.
+This means users are taking several risks:
 
-Over time, ArcX plans to reduce this trust requirement by:
+- the underlying protocol controls its own points program and reward allocation
+- period weights depend on information from the market maker
+- the market maker must receive rewards and fund the distribution contract
 
-- using independent third-party auditors to verify reported point balances, or
-- integrating more closely with exchanges so points can be attributed to ArcX users more directly
+See [Risk Disclosure](/legal/risk-disclosure) for the full list of CreditToken and reward-distribution risks.
 
 ---
 
@@ -88,6 +89,6 @@ Before allocating capital, users should evaluate:
 - the market maker behind the vToken
 - the Wildcat borrowing setup and borrower risk
 - the terms of the specific series they are trading
-- the current points-oracle trust assumptions
+- the current credit-oracle and reward-distribution assumptions
 
 The smart-contract layer makes custody and settlement transparent. It does not remove the need to evaluate counterparty risk, operational risk, and oracle trust.

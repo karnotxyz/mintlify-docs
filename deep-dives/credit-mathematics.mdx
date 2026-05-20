@@ -1,10 +1,10 @@
 ---
 title: "Credit Mathematics"
-description: "How credits determine each holder's share of points across periods, using capital multiplied by time."
+description: "How credits determine each holder's share of CreditTokens across periods, using capital multiplied by time."
 icon: "calculator"
 ---
 
-Credits determine your share of points. Points are distributed period by period, not as a single lump sum at the end of a series. This page explains how credits work, why periods exist, and how GCI lets the protocol track credits on-chain.
+Credits determine your share of CreditTokens. CreditTokens are generated period by period, not as a single lump sum at the end of a series. This page explains how credits work, why periods exist, and how GCI lets the protocol track credits on-chain.
 
 **Prerequisites:** [What is ArcX?](/learn/protocol-overview), [vToken](/learn/vtoken), [Series Lifecycle](/learn/series-lifecycle)
 
@@ -12,7 +12,7 @@ Credits determine your share of points. Points are distributed period by period,
 
 ## Why Credits Exist
 
-Without credits, points distribution would be trivially gameable. A naive design that distributes points proportional to token balance right before points are distributed lets anyone deposit one second before distribution and claim the same share as a day-one holder.
+Without credits, CreditToken distribution would be trivially gameable. A naive design that distributes CreditTokens proportional to token balance right before a distribution lets anyone deposit one second before distribution and claim the same share as a day-one holder.
 
 Credits prevent that by tracking not just what you hold, but how long you held it for.
 
@@ -22,17 +22,17 @@ Credits prevent that by tracking not just what you hold, but how long you held i
 
 A **series** is a fixed-maturity market built on top of a vToken. Each series has a maturity date and its own ST and EPT tokens.
 
-Each series is divided into equal-sized **credit periods**. These periods are chosen to match the point distribution frequency on the underlying exchange.
+Each series is divided into equal-sized **credit periods**. These periods are chosen to match the reward cycle on the underlying exchange.
 
-So if an exchange distributes points every week, the protocol uses one-week credit periods on-chain.
+The main purpose of periods is to give credits different weights over time. Without periods, an early user and a late user with the same final balance could end up with the same reward exposure, even though the early user contributed for longer.
 
-> A credit period is the on-chain period whose accumulated credits receive the points earned for the corresponding exchange period.
+For protocols with active points programs, you can think of these credit periods as lining up with the exchange's point cycles. If an exchange calculates points weekly, ArcX can use one-week credit periods on-chain.
 
 ---
 
 ## Why Periods Are Shifted
 
-There is one important nuance: on-chain periods are shifted by a fixed amount relative to the exchange periods.
+There is one important nuance for exchanges with active points programs: on-chain periods may be shifted by a fixed amount relative to the exchange periods.
 
 The reason is operational. Capital deposited on-chain is not instantly live on the exchange. It takes time for capital to move from the chain into the market maker's exchange positions.
 
@@ -45,7 +45,7 @@ Then the capital that was actually active on the exchange for that Monday-to-Mon
 
 Capital that showed up on-chain after that Sunday was too late to be deployed before the exchange measured points for that week.
 
-So the period tracked on-chain is shifted relative to the period used off-chain by the exchange.
+In cases like this, the period tracked on-chain is shifted relative to the period used off-chain by the exchange.
 
 ```mermaid
 gantt
@@ -62,15 +62,15 @@ gantt
     Period 2 points :b2, 2026-01-12, 7d
 ```
 
-In this example, when an on-chain period ends, the corresponding off-chain exchange points are received one day later and distributed back to that on-chain period.
+In this example, when an on-chain period ends, the corresponding period weight is reported one day later and CreditTokens are generated for that on-chain period.
 
 ---
 
 ## How Credits Are Calculated
 
-Credits are a way to track what share of total points you should receive at the end of every period.
+Credits are a way to track what share of total CreditTokens you should receive at the end of every period.
 
-From the protocol's perspective, the fair way to allocate points is to measure:
+From the protocol's perspective, the fair way to allocate credits is to measure:
 
 $$
 \text{capital} \times \text{time}
@@ -174,12 +174,12 @@ Credits are non-transferable. Only future holding time counts for the new owner.
 
 ---
 
-## Period-by-Period Points Distribution
+## Period-by-Period CreditToken Distribution
 
-Points are distributed period by period:
+CreditTokens are generated period by period:
 
 $$
-\text{yourPoints} = \sum_{p=1}^{P} \frac{\text{yourCredits}_p}{\text{totalCredits}_p} \times \text{points}_p
+\text{yourCreditTokens} = \sum_{p=1}^{P} \frac{\text{yourCredits}_p}{\text{totalCredits}_p} \times \text{periodWeight}_p
 $$
 
 where:
@@ -187,9 +187,11 @@ where:
 - $P$ = number of credit periods
 - $\text{yourCredits}_p$ = your credits during period $p$
 - $\text{totalCredits}_p$ = all credits during period $p$
-- $\text{points}_p$ = points assigned to that period
+- $\text{periodWeight}_p$ = the oracle-submitted weight for that period
 
-This is why early participation matters. If it is easier to get points in the early days of an exchange, early holders get that upside. Later entrants do not dilute those earlier periods.
+This is why early participation matters. If earlier periods carry higher weights, early holders get that upside. Later entrants do not dilute those earlier periods.
+
+For protocols with points programs, you can think of period weights as proportional or equal to the points received for the corresponding period. If one week generates more points than another, that week can receive a higher CreditToken weight.
 
 ---
 
@@ -200,8 +202,8 @@ The objective of this example is to show that an early holder can keep a large a
 **Setup:** 10-week series.
 - Alice holds 100 vTokens from week 1
 - Bob buys 250 EPT at week 7
-- Weeks 1-6 distribute 800 points per week
-- Weeks 7-10 distribute 200 points per week
+- Weeks 1-6 have a period weight of 800 per week
+- Weeks 7-10 have a period weight of 200 per week
 
 Bob brings in more capital later so that his capital x time is the same as Alice's:
 
@@ -210,19 +212,19 @@ Bob brings in more capital later so that his capital x time is the same as Alice
 
 **Weekly distribution:**
 
-| Week | Alice total credits | Bob total credits | Alice's share of points |
+| Week | Alice total credits | Bob total credits | Alice's share of CreditTokens |
 |------|---------------------|-------------------|-------------------------|
 | 1-6  | 100 x 6 = 600 | 0 x 6 = 0 | 600 / (600 + 0) = 100% |
 | 7-10 | 100 x 4 = 400 | 250 x 4 = 1,000 | 400 / (400 + 1,000) = 28.6% |
 
-**Points:**
+**CreditTokens:**
 
 | Holder | Weeks 1-6 | Weeks 7-10 | Total | Share |
 |--------|-----------|------------|-------|-------|
 | Alice  | 4,800 (800 x 6 weeks at 100%) | 228.6 (200 x 4 weeks x 28.6%) | **5,028.6** | **86.2%** |
 | Bob    | 0 | 571.4 (200 x 4 weeks x 71.4%) | **571.4** | **13.8%** |
 
-Even though Bob contributes the same total capital x time as Alice, Alice gets far more points because the earlier weeks were richer and those periods are locked in to the early holder.
+Even though Bob contributes the same total capital x time as Alice, Alice gets far more CreditTokens because the earlier weeks were richer and those periods are locked in to the early holder.
 
 <Info>
 These examples use simplified credit amounts for clarity. In production, credit amounts vary with NAV growth, and GCI accounts for that automatically.
