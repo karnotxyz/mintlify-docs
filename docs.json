@@ -114,7 +114,12 @@
             "pages": [
               "reference/glossary-and-reference"
             ]
-          },
+          }
+        ]
+      },
+      {
+        "tab": "Legal",
+        "groups": [
           {
             "group": "Legal",
             "pages": [
