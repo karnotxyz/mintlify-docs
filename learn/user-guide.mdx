@@ -12,13 +12,13 @@ Everything starts with depositing USDC for vTokens. From there, you choose your 
 
 <Steps>
   <Step title="Select a vault">
-    Each vault pairs a market maker with one or more exchanges. Different vaults have different rates and point sources.
+    Each vault pairs a market maker with one or more exchanges or reward programs. Different vaults have different rates and reward sources.
   </Step>
   <Step title="Deposit USDC">
     Enter your amount. You receive vToken shares at the current NAV.
   </Step>
   <Step title="Done">
-    Your vTokens earn fixed yield (NAV grows) and accrue credits for points. You can stop here — this is the simplest path.
+    Your vTokens earn yield (NAV grows) and accrue credits for supported reward programs. You can stop here — this is the simplest path.
   </Step>
 </Steps>
 
@@ -33,8 +33,8 @@ Start by selecting a **series** with the maturity date you want. The same vToken
 Read [Orderbook Guide](/learn/orderbook-guide) if you want a full mental model for how APR, market orders, and limit orders work before trading.
 
 <Tabs>
-  <Tab title="Points Farmer" icon="chart-line">
-    You want leveraged points exposure.
+  <Tab title="Reward Buyer" icon="chart-line">
+    You want rewards-side exposure.
 
     <Steps>
       <Step title="Select a series">
@@ -44,7 +44,7 @@ Read [Orderbook Guide](/learn/orderbook-guide) if you want a full mental model f
         Navigate to the EPT orderbook for that series.
       </Step>
       <Step title="Place a buy order">
-        Set your APR and quantity. You're paying with vTokens. At 0.02 vToken per EPT, 100 vTokens buys 5,000 EPT — 50x points leverage. The UI shows APR.
+        Set your APR and quantity. You're paying with vTokens. At 0.02 vToken per EPT, 100 vTokens buys 5,000 EPT. The UI shows APR.
       </Step>
       <Step title="Order fills">
         Your order matches and EPT lands in your wallet.
@@ -52,8 +52,8 @@ Read [Orderbook Guide](/learn/orderbook-guide) if you want a full mental model f
       <Step title="Hold and earn">
         Credits accrue automatically while you hold EPT. No action needed.
       </Step>
-      <Step title="Claim points">
-        Claim your PointsTokens based on your credit share as points are distributed.
+      <Step title="Claim CreditTokens">
+        Claim CreditTokens based on your credit share and the period weights.
       </Step>
     </Steps>
   </Tab>
@@ -102,7 +102,7 @@ Withdrawals convert vTokens to USDC in two steps:
 
 <Steps>
   <Step title="Request">
-    Your vToken shares are burned. You stop earning yield and credits. The USDC you're owed is locked at current NAV.
+    Your vToken shares are burned. You stop earning yield and credits. The USDC you are owed is locked at current NAV.
   </Step>
   <Step title="Finalize">
     After a short delay (up to 3 days), your USDC is released. The delay covers on-chain/exchange settlement.
@@ -120,20 +120,23 @@ When a series reaches maturity, final NAV is locked in. No deadline to redeem �
 <Tabs>
   <Tab title="vToken Holders" icon="wallet">
     Claim directly:
+
     - **USDC** at the final NAV
-    - **PointsTokens** based on your credit share
+    - **CreditTokens** based on your credit share
   </Tab>
   <Tab title="ST Holders" icon="vault">
     Redeem ST back into vToken at the final NAV. Your ST is burned.
   </Tab>
   <Tab title="EPT Holders" icon="star">
-    Claim PointsTokens based on your accumulated credit share. A 25% claim fee is deducted from your PointsTokens.
+    Claim CreditTokens based on your accumulated credit share. A 25% claim fee is deducted from your CreditTokens.
   </Tab>
 </Tabs>
 
-### What to Do with PointsTokens
+### What to Do with CreditTokens
 
-PointsTokens represent actual exchange points. Hold them until the exchange conducts its TGE, then burn your PointsTokens to receive airdrop tokens. See [PointsToken](/learn/points-token) for details.
+CreditTokens are used for reward distribution. When a market maker receives rewards for a supported strategy, they can share those rewards with CreditToken holders through the ArcX claim flow.
+
+See [CreditToken](/learn/credit-token) for the mechanics and [Risk Disclosure](/legal/risk-disclosure) for reward-distribution risks.
 
 ---
 
@@ -147,17 +150,7 @@ PointsTokens represent actual exchange points. Hold them until the exchange cond
 | Credits accruing on EPT | Yes | No |
 | Withdraw vTokens | Yes | Yes |
 | Redeem ST into vToken | No | **Yes** |
-| Claim EPT for PointsTokens | As points are distributed | **Yes** |
-| Claim vToken (both) | No | No | **Yes** |
-
----
-
-## Fees
-
-| Fee | Rate | When |
-|---|---|---|
-| Performance fee (yield) | 20% of interest earned | On yield accrual |
-| PointsToken claim fee | 25% of PointsTokens | On claiming PointsTokens |
+| Claim CreditTokens from EPT | As CreditTokens become available | **Yes** |
 
 ---
 
@@ -165,7 +158,7 @@ PointsTokens represent actual exchange points. Hold them until the exchange cond
 
 <CardGroup cols={2}>
   <Card title="Credit Mathematics" icon="calculator" href="/deep-dives/credit-mathematics">
-    How credits accrue and how your points share is calculated.
+    How credits accrue and how your CreditToken share is calculated.
   </Card>
   <Card title="EPT Pricing" icon="chart-line" href="/deep-dives/ept-pricing">
     How ST and EPT are priced and what drives the ST discount.

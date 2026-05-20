@@ -1,12 +1,12 @@
 ---
 title: "Expected Points Token (EPT)"
-description: "The points side of a series. Buy points upfront, accrue credits while holding, and claim PointsTokens over time."
+description: "The rewards side of a series. Buy EPT, accrue credits while holding, and claim CreditTokens."
 icon: "sparkles"
 ---
 
-Each **vToken** can be part of a [series](/learn/series-lifecycle). A **series** is a fixed period of time with a maturity date where two vToken holders can exchange points for money.
+Each **vToken** can be part of a [series](/learn/series-lifecycle). A **series** is a fixed period of time with a maturity date where users can separate the principal + yield side from the rewards side.
 
-**EPT** is the component you hold when you want to buy points upfront and get leveraged points exposure until maturity.
+**EPT** is the component you hold when you want rewards-side exposure until maturity.
 
 ## What Is EPT
 
@@ -14,19 +14,19 @@ Every **vToken** in a series splits into:
 
 $$1 \text{ vToken} = 1 \text{ ST} + 1 \text{ EPT}$$
 
-One side wants fixed yield and sells points. The other side pays upfront for those points and holds the **points side** through **EPT**.
+One side wants principal + yield exposure and gives up the rewards side. The other side pays upfront and holds the **rewards side** through **EPT**.
 
 ```mermaid
 flowchart LR
     A["You give 5 vTokens"] --> C["Series trade"]
     B["ST seller gives 50 vTokens"] --> C
     C --> D["You receive 55 EPT"]
-    D --> E["Claim tokenized points from 55 vTokens while holding"]
+    D --> E["Claim CreditTokens from 55 EPT while holding"]
 ```
 
-EPT is your claim on exchange points earned by the vault's strategy during a series. While you hold EPT, you accrue credits. Your credit share determines how many PointsTokens you can claim.
+EPT accrues credits while you hold it. Your credit share determines how many CreditTokens you can claim for each period.
 
-EPT trades on the **EPT/vToken** orderbook. You buy EPT for a small upfront price because you are only buying the points side, not the principal + yield side.
+EPT trades on the **EPT/vToken** orderbook. You buy EPT for a small upfront price because you are only buying the rewards side, not the principal + yield side.
 
 See [Orderbook Guide](/learn/orderbook-guide) for how to reason about APR and place EPT orders in the app.
 
@@ -34,11 +34,11 @@ See [Orderbook Guide](/learn/orderbook-guide) for how to reason about APR and pl
 
 ## Credits
 
-EPT accrues **credits** while you hold it — the longer you hold and the more you hold, the bigger your share of points. Credits are tracked automatically on-chain. No oracle.
+EPT accrues **credits** while you hold it — the longer you hold and the more you hold, the bigger your share of CreditTokens. Credits are tracked automatically on-chain.
 
 **Fresh start.** When you buy EPT, your credit counter starts from zero. The seller keeps their accumulated credits. No credit inheritance.
 
-**Hold earlier, earn more. Weekly point distributions are locked in, so later buyers do not share in earlier weeks.**
+**Hold earlier, earn more.** Earlier credit periods are locked in, so later buyers do not dilute earlier holders.
 
 ![Weekly point distribution](/images/ept-weekly-distribution.png)
 
@@ -46,17 +46,17 @@ See [Credit Mathematics](/deep-dives/credit-mathematics) for the GCI formula and
 
 ---
 
-## Buy the Points Side
+## Buy the Rewards Side
 
-ST buyers are selling points for fixed yield. That leaves EPT available at a low upfront price because it only represents the points side.
+ST buyers give up the rewards side for principal + yield exposure. That leaves EPT available at a low upfront price because it only represents the rewards side.
 
 **Example.** EPT trades at \$0.02. That means for the cost of 1 vToken, you can buy **50 EPT**.
 
 - Price per EPT: \$0.02
 - EPT bought with 1 vToken: 1 / 0.02 = **50 EPT**
-- **Points exposure scales with how many EPT you can hold for the same upfront cost**
+- **Rewards-side exposure scales with how many EPT you can hold for the same upfront cost**
 
-The cheaper EPT is, the more points exposure you can buy for the same amount of capital.
+The cheaper EPT is, the more rewards-side exposure you can buy for the same amount of capital.
 
 ### EPT Price Falls Over the Series
 
@@ -68,14 +68,14 @@ Same price at different times means different APR.
 
 ## Fees
 
-We charge a fee on points received by EPT holders for the leverage ArcX provides. You can find the exact fee details on the series page in the UI.
+We charge a fee on CreditTokens received by EPT holders for the rewards-side exposure ArcX provides. You can find the exact fee details on the series page in the UI.
 
 ---
 
-## Claiming PointsTokens
+## Claiming CreditTokens
 
-While you hold EPT, points are distributed based on your credit share. As those points are distributed, you can claim them as [PointsTokens](/learn/points-token).
+While you hold EPT, credits accrue based on your balance and holding time. CreditTokens become claimable based on your credit share and the period weights submitted through the oracle.
 
-Your allocation is based on your credit share. Claim PointsTokens from the UI when they become available.
+Claim CreditTokens from the UI when they become available. Market makers can share rewards received from the underlying protocol with CreditToken holders.
 
 Each series produces a separate EPT. Credits do not carry over between series.

@@ -13,6 +13,7 @@ It covers:
 - how order sizes are interpreted
 - how same-asset and cross-asset matching works
 - how market orders, slippage, partial fills, and cancels behave
+- how the off-chain matching service is constrained by on-chain settlement checks
 
 ---
 
@@ -157,6 +158,23 @@ If liquidity changes too much before execution, the order can fail instead of fi
 
 ---
 
+## Off-Chain Matching, On-Chain Checks
+
+ArcX uses an off-chain matching service to search for candidate matches across the orderbook. That service helps with discovery and execution speed, but it does not get final authority over settlement.
+
+When a match set is submitted, the contracts verify:
+
+- order signatures and ownership
+- APR compatibility
+- user slippage limits
+- token balances and approvals
+- series maturity and settlement constraints
+- the required ST, EPT, and vToken transfers
+
+If any check fails, the fill fails. The matcher cannot force users into worse APRs or invalid fills outside the constraints they committed on-chain.
+
+---
+
 ## Partial Fills and Cancels
 
 ### Limit orders
@@ -239,5 +257,5 @@ Interpretation:
 ## Related Reading
 
 - [Orderbook Guide](/learn/orderbook-guide) for user-facing order intuition
-- [EPT Pricing](/deep-dives/ept-pricing) for returns framing on the points side
-- [Credit Mathematics](/deep-dives/credit-mathematics) for how credits translate into points
+- [EPT Pricing](/deep-dives/ept-pricing) for returns framing on the rewards side
+- [Credit Mathematics](/deep-dives/credit-mathematics) for how credits generate CreditTokens

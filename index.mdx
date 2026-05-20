@@ -1,12 +1,12 @@
 ---
 title: "ArcX Documentation"
-description: "ArcX wraps perp DEX strategies into a vault token that earns fixed yield and exchange points. Buy ST or EPT for isolated exposure."
+description: "ArcX wraps perp DEX strategies into a vault token that earns yield and credits for supported reward programs. Buy ST or EPT for isolated exposure."
 icon: "book-open"
 ---
 
-Deposit USDC into a vault, receive a **vToken** — a vault share that earns fixed yield and exchange points. Hold it for the combined return, or buy **ST** (yield) or **EPT** (points) on the orderbook to concentrate into the side you want.
+Deposit USDC into a vault, receive a **vToken** — a vault share that earns yield and accrues credits for supported reward programs. Hold it for the combined exposure, or buy **ST** (principal + yield) or **EPT** (rewards side) on the orderbook to concentrate into the side you want.
 
-Points farmers buy EPT for leveraged points exposure. Yield seekers buy discounted ST for fixed returns. Or just hold vToken and earn both.
+Reward buyers buy EPT for rewards-side exposure. Yield seekers buy discounted ST for principal + yield exposure. Or just hold vToken and earn both.
 
 ---
 
@@ -15,7 +15,7 @@ Points farmers buy EPT for leveraged points exposure. Yield seekers buy discount
 <CardGroup cols={2}>
 
   <Card title="How ArcX Works" icon="book-open" href="/learn/protocol-overview">
-    The vToken vault, orderbook mechanics, credit system, and how yield and points work.
+    The vToken vault, orderbook mechanics, credit system, and how yield, credits, and rewards work.
   </Card>
 
   <Card title="vToken" icon="circle-dollar-to-slot" href="/learn/vtoken">
@@ -23,11 +23,11 @@ Points farmers buy EPT for leveraged points exposure. Yield seekers buy discount
   </Card>
 
   <Card title="Strategy Token (ST)" icon="vault" href="/learn/strategy-token">
-    The yield claim. Buy at a discount, redeem at NAV after maturity.
+    The principal + yield side. Buy at a discount, redeem at maturity.
   </Card>
 
   <Card title="Expected Points Token (EPT)" icon="star" href="/learn/expected-points-token">
-    The points claim. Accrues credits for weekly points distribution.
+    The rewards side. Accrues credits that generate CreditTokens.
   </Card>
 
 </CardGroup>
@@ -39,7 +39,7 @@ Points farmers buy EPT for leveraged points exposure. Yield seekers buy discount
 <CardGroup cols={2}>
 
   <Card title="User Guide" icon="user" href="/learn/user-guide">
-    Step-by-step: deposit, trade, redeem. Start here if you want to use the product.
+    Step-by-step: deposit, trade, claim, and withdraw. Start here if you want to use the product.
   </Card>
 
   <Card title="ArcX vs Pendle" icon="scale-balanced" href="/learn/pendle-comparison">
@@ -55,7 +55,7 @@ Points farmers buy EPT for leveraged points exposure. Yield seekers buy discount
 <CardGroup cols={3}>
 
   <Card title="Credit Mathematics" icon="calculator" href="/deep-dives/credit-mathematics">
-    How credits distribute points fairly — the GCI formula and weekly settlement.
+    How credits generate CreditTokens — the GCI formula and period weighting.
   </Card>
 
   <Card title="EPT Pricing" icon="chart-line" href="/deep-dives/ept-pricing">

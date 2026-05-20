@@ -7,7 +7,7 @@ icon: "chart-line"
 Before placing an order, start with two things:
 
 1. pick the **series** you want to trade
-2. decide whether you want **principal + yield** exposure through **ST** or **points** exposure through **EPT**
+2. decide whether you want **principal + yield** exposure through **ST** or **rewards-side** exposure through **EPT**
 
 The same **vToken** can have multiple series open at different maturity dates, and each series has its own **ST/vToken** and **EPT/vToken** orderbooks (though economically they are the same underlying book, as explained below).
 
@@ -56,8 +56,8 @@ When placing a **limit order**, the cleanest way to think about APR is:
 |---|---|
 | **Buy ST** | The **minimum APR** you want in exchange for locking your vTokens into the principal + yield side |
 | **Sell ST** | You are selling ST at a discount, so the APR is the **maximum discount / worst yield deal** you are willing to accept |
-| **Buy EPT** | You are paying upfront for points, so the APR is the **maximum APR** you are willing to give the other side |
-| **Sell EPT** | You are selling the points side, so the APR is the **minimum APR** the buyer must pay to get equivalent EPT exposure |
+| **Buy EPT** | You are paying upfront for rewards-side exposure, so the APR is the **maximum APR** you are willing to give the other side |
+| **Sell EPT** | You are selling the rewards side, so the APR is the **minimum APR** the buyer must pay to get equivalent EPT exposure |
 
 In plain English:
 
@@ -77,7 +77,7 @@ That is the main directional rule to keep in mind when reading the book.
 The book is quoted in APR, but users still need a simple way to think about token price:
 
 - **ST** trades below **1 vToken**
-- **EPT** trades at `price per point × points received from 1 vToken until maturity` in an efficient market, and as an EPT buyer you want it to trade below that value so you have room to profit
+- **EPT** trades based on the market's view of future CreditToken generation and reward distribution, and as an EPT buyer you want the price to leave room for your expected return
 
 **As maturity gets closer, the same APR implies different ST and EPT amounts.**
 
@@ -102,6 +102,20 @@ That means:
 
 - liquidity is thin or taking available depth would move your APR too much
 - you care about a specific APR more than immediate execution
+
+---
+
+## How Matching Is Checked
+
+ArcX uses an off-chain matching service to find candidate matches between compatible orders. The service proposes fills, but final settlement is checked by on-chain logic.
+
+The contracts verify that each fill stays within:
+
+- the APR bounds the user selected
+- the slippage bounds the user selected
+- the settlement constraints for the relevant ST, EPT, and vToken transfers
+
+The matcher cannot force a user into a worse APR or an invalid fill outside those on-chain constraints.
 
 ---
 
@@ -145,5 +159,5 @@ See [Orderbook Mechanics](/deep-dives/orderbook-mechanics) for the full matching
 ## Next Steps
 
 - Read the [User Guide](/learn/user-guide) for the step-by-step trading flow
-- Read [EPT Pricing](/deep-dives/ept-pricing) for points-side return intuition
+- Read [EPT Pricing](/deep-dives/ept-pricing) for rewards-side return intuition
 - Read [Orderbook Mechanics](/deep-dives/orderbook-mechanics) for the full math

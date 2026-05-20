@@ -12,11 +12,11 @@ If you want the full matching math behind ST/EPT pricing, read [Orderbook Mechan
 
 **NAV** is the per-share USDC value of the vault. It grows as the market maker returns value through the market's configured model, whether that is a fixed rate or a performance-fee split. NAV does not respond to orderbook activity.
 
-**ST** and **EPT** are the yield and points components of a vToken. They trade on the orderbook priced in vTokens.
+**ST** and **EPT** are the principal + yield and rewards-side components of a vToken. They trade on the orderbook priced in vTokens.
 
-EPT buyers pay for the points portion of the vToken. Whatever they pay, the remainder is what ST is worth. If ST trades at \$0.98 near a NAV of 1.00, the market is valuing EPT at roughly \$0.02. The more someone pays for EPT, the cheaper ST gets — and vice versa.
+EPT buyers pay for the rewards side of the vToken. Whatever they pay, the remainder is what ST is worth. If ST trades at \$0.98 near a NAV of 1.00, the market is valuing EPT at roughly \$0.02. The more someone pays for EPT, the cheaper ST gets — and vice versa.
 
-The matching engine keeps this relationship tight. When an ST buy and EPT buy arrive together, the engine mints — splitting vTokens into ST + EPT. When an ST sell and EPT sell arrive together, the engine burns — recombining into vTokens.
+The matching service and settlement contracts keep this relationship tight. When an ST buy and EPT buy arrive together, settlement can split vTokens into ST + EPT. When an ST sell and EPT sell arrive together, settlement can recombine ST + EPT into vTokens.
 
 ---
 
@@ -24,7 +24,7 @@ The matching engine keeps this relationship tight. When an ST buy and EPT buy ar
 
 The natural question is "is \$0.02 too expensive?" The better question: **what is the implied return?**
 
-EPT is a claim on future points. Its value depends on how many points you earn and what those points are worth at TGE.
+EPT earns credits that generate CreditTokens. Its value depends on how many CreditTokens you earn and what rewards those CreditTokens may receive down the line in the protocol.
 
 ### Worked Example
 
@@ -33,9 +33,9 @@ You use 5 vTokens to buy 250 EPT at \$0.02 each during a 60-day series:
 | Step | What happens |
 |---|---|
 | **Buy** | 250 EPT for 5 vTokens (\$5 at NAV) |
-| **Hold** | You accrue credits over the series. Your credit share earns 55 points. |
-| **Claim** | Series matures. Let's assume a 10% EPT fee (actual value can be seen on the market page). You receive 50 PointsTokens. |
-| **TGE** | Each point is worth \$0.20 at TGE. You burn 50 PointsTokens for \$10. |
+| **Hold** | You accrue credits over the series. Your credit share earns 55 CreditTokens. |
+| **Claim** | Series matures. Let's assume a 10% EPT fee (actual value can be seen on the market page). You receive 50 CreditTokens. |
+| **Rewards** | In this example, your 50 CreditTokens are worth \$0.20 each when rewards are shared. |
 | **Return** | \$10 out on \$5 in = **100% return over 60 days** |
 
 ## Leverage and Price
@@ -71,13 +71,13 @@ And this is also why quoting the orderbook in APR is important: absolute token s
 | Factor | Effect on EPT Price |
 |---|---|
 | **Time remaining** | More time = more credits to earn = higher price |
-| **Expected points value** | Higher expected TGE value = higher price |
-| **Points demand** | More buyers on EPT orderbook = higher price |
+| **Expected CreditToken value** | Higher expected reward value = higher price |
+| **Rewards-side demand** | More buyers on EPT orderbook = higher price |
 
 ---
 
 ## Credits
 
-EPT uses a smart credit-based system to calculate point distribution over time.
+EPT uses a smart credit-based system to calculate CreditToken distribution over time.
 
-See [Credit Mathematics](/deep-dives/credit-mathematics) for how credits work and how points are assigned across periods.
+See [Credit Mathematics](/deep-dives/credit-mathematics) for how credits work and how CreditTokens are assigned across periods.

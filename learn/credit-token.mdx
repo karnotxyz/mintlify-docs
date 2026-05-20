@@ -1,0 +1,47 @@
+---
+title: "CreditToken"
+description: "The token generated from accrued credits and used for reward distribution."
+icon: "coins"
+---
+
+## What Is a CreditToken
+
+Each vault has its own **CreditToken**. CreditTokens are generated from credits earned by holding vToken or EPT.
+
+Credits measure participation over time. CreditTokens are a way to realize expected rewards, including rewards from points programs, into an actual token across periods.
+
+CreditTokens are not exchange points and do not represent a direct claim against the underlying protocol or any fixed amount of points.
+
+---
+
+## How CreditTokens Work
+
+CreditTokens are created across credit periods so credits can receive different weights over time. This lets the protocol account for the fact that earlier participation can matter more than later participation, or that different periods can contribute differently to eventual rewards.
+
+For protocols with points programs, these credit periods can be mapped to the exchange's point-calculation cadence. If a market calculates points weekly, ArcX can use weekly credit periods.
+
+For each period:
+
+1. vToken and EPT holders accrue credits based on capital × time
+2. a period weight is submitted through the oracle
+3. CreditTokens are minted to eligible holders based on their credit share and that period weight
+
+For protocols with points programs, this can be thought of as minting more CreditTokens when a period generated more points, and fewer CreditTokens when a period generated fewer points. Early users keep the benefit of earlier periods, and later users do not dilute them.
+
+---
+
+## Reward Distribution
+
+If rewards are received by the market maker later in the underlying protocol, the market maker can share those rewards with CreditToken holders.
+
+CreditToken holders then claim according to the relevant claim logic.
+
+Different markets have different market makers, rewards programs, oracle weights, and fees. Review the market page and [Risk Disclosure](/legal/risk-disclosure) before participating.
+
+---
+
+## Across Series
+
+ST and EPT are created fresh for each series. CreditTokens are specific to a vault and accumulate across multiple series of that same vault.
+
+That means CreditTokens generated from different series of the same vault are fungible with each other.
