@@ -88,6 +88,7 @@
             "group": "Using ArcX",
             "pages": [
               "learn/user-guide",
+              "learn/referrals",
               "learn/orderbook-guide",
               "learn/pendle-comparison"
             ]
