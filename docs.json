@@ -120,6 +120,7 @@
           {
             "group": "Reference",
             "pages": [
+              "reference/deployed-contracts",
               "reference/glossary-and-reference"
             ]
           }
