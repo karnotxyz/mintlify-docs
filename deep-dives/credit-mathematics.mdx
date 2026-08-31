@@ -4,7 +4,7 @@ description: "How credits determine each holder's share of CreditTokens across p
 icon: "calculator"
 ---
 
-Credits determine your share of CreditTokens. CreditTokens are generated period by period, not as a single lump sum at the end of a series. This page explains how credits work, why periods exist, and how GCI lets the protocol track credits on-chain.
+Credits determine your share of CreditTokens. After the market operator submits point weights on-chain, the contracts automatically issue CreditTokens period by period rather than as a single lump sum at the end of a series. This page explains how credits work, why periods exist, and how GCI lets the protocol track credits on-chain.
 
 **Prerequisites:** [What is ArcX?](/learn/protocol-overview), [vToken](/learn/vtoken), [Series Lifecycle](/learn/series-lifecycle)
 
@@ -22,47 +22,21 @@ Credits prevent that by tracking not just what you hold, but how long you held i
 
 A **series** is a fixed-maturity market built on top of a vToken. Each series has a maturity date and its own ST and EPT tokens.
 
-Each series is divided into equal-sized **credit periods**. These periods are chosen to match the reward cycle on the underlying exchange.
+Each series is divided into **credit periods**. Their schedule is configured to reflect the measurement or reporting cadence of the underlying program.
 
-The main purpose of periods is to give credits different weights over time. Without periods, an early user and a late user with the same final balance could end up with the same reward exposure, even though the early user contributed for longer.
+The main purpose of periods is to give credits different weights over time. Without periods, an early user and a late user with the same final balance could end up with the same points exposure, even though the early user contributed for longer.
 
-For protocols with active points programs, you can think of these credit periods as lining up with the exchange's point cycles. If an exchange calculates points weekly, ArcX can use one-week credit periods on-chain.
+For a points program with weekly reporting, for example, ArcX can use weekly credit periods. Each finalized period preserves the credit share earned during that interval.
 
 ---
 
-## Why Periods Are Shifted
+## Program Cadence and Finalization
 
-There is one important nuance for exchanges with active points programs: on-chain periods may be shifted by a fixed amount relative to the exchange periods.
+The on-chain credit schedule and an underlying program's reporting schedule do not have to finalize at the same moment. A program can report activity later, use a different cutoff, or revise its own schedule.
 
-The reason is operational. Capital deposited on-chain is not instantly live on the exchange. It takes time for capital to move from the chain into the market maker's exchange positions.
+The vault's configured credit periods determine when ArcX measures holder participation. After the information needed for a period is available, the market operator submits that period's point weight on-chain. The contracts then automatically issue CreditTokens from the finalised credit shares.
 
-For example, suppose:
-
-- the deployment delay is **1 day**
-- the exchange gives points from **Monday to Monday**
-
-Then the capital that was actually active on the exchange for that Monday-to-Monday period was capital that had already arrived on-chain by the previous **Sunday**.
-
-Capital that showed up on-chain after that Sunday was too late to be deployed before the exchange measured points for that week.
-
-In cases like this, the period tracked on-chain is shifted relative to the period used off-chain by the exchange.
-
-```mermaid
-gantt
-    title Shift Between On-Chain Credit Periods and Exchange Point Periods
-    dateFormat  YYYY-MM-DD
-    axisFormat  %a
-
-    section On-chain credit period
-    Period 1 credits :a1, 2026-01-04, 7d
-    Period 2 credits :a2, 2026-01-11, 7d
-
-    section Exchange point period
-    Period 1 points :b1, 2026-01-05, 7d
-    Period 2 points :b2, 2026-01-12, 7d
-```
-
-In this example, when an on-chain period ends, the corresponding period weight is reported one day later and CreditTokens are generated for that on-chain period.
+ArcX credit periods will likely align with the underlying program's calendar, but this is not guaranteed. Always use the schedule shown for the vault or series to determine ArcX credit eligibility.
 
 ---
 
@@ -76,13 +50,17 @@ $$
 \text{capital} \times \text{time}
 $$
 
-We do not know the exact way each exchange calculates points internally. But for the protocol, capital multiplied by time is the cleanest approximation of fair participation.
+An underlying protocol can use its own undisclosed or changeable points formula. ArcX does not attempt to reproduce that formula for each user. Within ArcX, position value multiplied by time is the basis for allocating each period's CreditTokens.
 
 ---
 
 ## Calculating Credits
 
-Your capital is not constant over time, because NAV grows as the underlying strategy earns yield.
+The value of a position may or may not change over time:
+
+- in a zero-yield vault, NAV remains constant
+- when vToken yield is reflected through NAV, NAV changes to reflect that value
+- yield reflected solely in the input token's own price does not change a NAV denominated in that token
 
 So mathematically, capital multiplied by time becomes:
 
@@ -90,7 +68,7 @@ $$
 \text{area under the capital-time curve}
 $$
 
-If your capital was constant, this would just be a rectangle. But because NAV grows, the curve slopes upward, so the area is a trapezoid.
+With constant NAV, this area is a rectangle. When NAV changes, the protocol uses the average of the starting and ending NAV, producing a trapezoid.
 
 That area is what credits are trying to track.
 
@@ -102,7 +80,7 @@ We cannot recompute area-under-the-curve for every user on-chain as time passes.
 
 **GCI** stands for **Global Credit Index**.
 
-GCI is the amount of credits earned **per EPT share** over time. The point of tracking GCI is that the protocol does not need to store a full capital-time history for every user.
+GCI is the amount of credits earned **per credit-bearing token unit** over time. The point of tracking GCI is that the protocol does not need to store a full capital-time history for every user.
 
 Instead, when a user's balance changes, credits can be computed from:
 
@@ -146,6 +124,28 @@ where:
 
 Geometrically, this is the area of a trapezoid under the capital-time curve.
 
+### Constant-NAV Vaults
+
+If a vault has no underlying APY, then:
+
+$$
+\text{NAV}_{start} = \text{NAV}_{end} = \text{NAV}
+$$
+
+The same GCI formula reduces to:
+
+$$
+\text{GCI increment} = \text{NAV} \times \text{days}
+$$
+
+If NAV is constant at 1, user credits reduce to:
+
+$$
+\text{your credits} = \text{your balance} \times \text{days}
+$$
+
+This is not a separate credit model. It is the constant-NAV case of the same NAV-based GCI formula.
+
 ---
 
 ## How User Credits Are Calculated
@@ -167,7 +167,7 @@ That is why GCI is useful: it turns a continuous capital-times-time problem into
 When tokens change hands, the new holder starts fresh from that moment.
 
 - **Orderbook purchase:** you buy EPT and start with zero prior credits
-- **Minting:** you deposit USDC and receive freshly minted vTokens that start from zero prior credits
+- **Minting:** you deposit the vault's supported input token and receive freshly minted vTokens that start from zero prior credits
 - **No credit inheritance:** the buyer does not receive the seller's previously accumulated credits
 
 Credits are non-transferable. Only future holding time counts for the new owner.
@@ -176,7 +176,7 @@ Credits are non-transferable. Only future holding time counts for the new owner.
 
 ## Period-by-Period CreditToken Distribution
 
-CreditTokens are generated period by period:
+CreditTokens are issued automatically period by period:
 
 $$
 \text{yourCreditTokens} = \sum_{p=1}^{P} \frac{\text{yourCredits}_p}{\text{totalCredits}_p} \times \text{periodWeight}_p
@@ -187,7 +187,7 @@ where:
 - $P$ = number of credit periods
 - $\text{yourCredits}_p$ = your credits during period $p$
 - $\text{totalCredits}_p$ = all credits during period $p$
-- $\text{periodWeight}_p$ = the oracle-submitted weight for that period
+- $\text{periodWeight}_p$ = the point weight submitted on-chain by the market operator for that period
 
 This is why early participation matters. If earlier periods carry higher weights, early holders get that upside. Later entrants do not dilute those earlier periods.
 
@@ -227,5 +227,5 @@ Bob brings in more capital later so that his capital x time is the same as Alice
 Even though Bob contributes the same total capital x time as Alice, Alice gets far more CreditTokens because the earlier weeks were richer and those periods are locked in to the early holder.
 
 <Info>
-These examples use simplified credit amounts for clarity. In production, credit amounts vary with NAV growth, and GCI accounts for that automatically.
+These examples use a constant NAV for clarity. For a zero-yield vault, that is the direct balance-times-time case. If vToken yield is reflected through a change in NAV, GCI accounts for that change automatically. Yield reflected in the input token's own price does not by itself change a NAV denominated in that token.
 </Info>

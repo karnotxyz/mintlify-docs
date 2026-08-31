@@ -1,10 +1,10 @@
 ---
 title: "User Guide"
-description: "Step-by-step: deposit for vTokens, buy EPT or ST on the orderbook, withdraw, and manage positions through series maturity."
+description: "Deposit for vTokens, trade ST or EPT, claim CreditTokens, manage positions, and withdraw."
 icon: "compass"
 ---
 
-Everything starts with depositing USDC for vTokens. From there, you choose your path.
+Everything starts with a vault's supported input token. Deposit for vTokens, then choose discounted ST to sell future points exposure or EPT to buy concentrated points exposure.
 
 ---
 
@@ -12,72 +12,60 @@ Everything starts with depositing USDC for vTokens. From there, you choose your 
 
 <Steps>
   <Step title="Select a vault">
-    Each vault pairs a market maker with one or more exchanges or reward programs. Different vaults have different rates and reward sources.
+    Review the input token, supported network, underlying protocol, yield behavior, points program, fees, and withdrawal terms. Vaults can generate yield, points, or both.
   </Step>
-  <Step title="Deposit USDC">
-    Enter your amount. You receive vToken shares at the current NAV.
+  <Step title="Deposit the supported input token">
+    Enter your amount and approve the token if required. The app shows the current NAV and expected vTokens before confirmation.
   </Step>
-  <Step title="Done">
-    Your vTokens earn yield (NAV grows) and accrue credits for supported reward programs. You can stop here — this is the simplest path.
+  <Step title="Receive vToken and choose a series">
+    vToken is the entry and settlement asset for ST/EPT markets. Select the maturity that matches the period over which you want to sell or buy points exposure.
   </Step>
 </Steps>
 
 ---
 
-## Buy EPT or ST
+## Trade ST or EPT
 
-If you want isolated exposure, use your vTokens to buy on the orderbook.
+Select a **series** with the maturity date you want. The same vToken can have multiple series, each with its own ST and EPT.
 
-Start by selecting a **series** with the maturity date you want. The same vToken can have multiple series open at different maturities.
-
-Read [Orderbook Guide](/learn/orderbook-guide) if you want a full mental model for how APR, market orders, and limit orders work before trading.
+The ST/EPT book is quoted in APR. Read the [Orderbook Guide](/learn/orderbook-guide) before trading if you want the full pricing and order-flow model.
 
 <Tabs>
-  <Tab title="Reward Buyer" icon="chart-line">
-    You want rewards-side exposure.
-
+  <Tab title="Points Side (EPT)" icon="chart-line">
     <Steps>
       <Step title="Select a series">
-        Choose the series you want to trade. The same vToken can have multiple series with different maturity dates.
+        Review the series maturity, EPT fee, time remaining, and points-program assumptions.
       </Step>
       <Step title="Open the EPT orderbook">
-        Navigate to the EPT orderbook for that series.
+        Navigate to the EPT/vToken view for that series.
       </Step>
-      <Step title="Place a buy order">
-        Set your APR and quantity. You're paying with vTokens. At 0.02 vToken per EPT, 100 vTokens buys 5,000 EPT. The UI shows APR.
+      <Step title="Place an order">
+        Pay with vTokens to buy EPT. Use a market order for immediate execution within your slippage limit, or a limit order for a selected APR.
       </Step>
-      <Step title="Order fills">
-        Your order matches and EPT lands in your wallet.
-      </Step>
-      <Step title="Hold and earn">
-        Credits accrue automatically while you hold EPT. No action needed.
+      <Step title="Hold and accrue credits">
+        Credits accrue automatically while you hold EPT. Your counter starts when you receive the EPT; the seller keeps credits accumulated earlier.
       </Step>
       <Step title="Claim CreditTokens">
-        Claim CreditTokens based on your credit share and the period weights.
+        After the market operator submits point weights on-chain, the contracts automatically issue CreditTokens based on your credit share and the applicable EPT fee.
       </Step>
     </Steps>
   </Tab>
-  <Tab title="Yield Seeker" icon="vault">
-    You want principal + yield exposure.
-
+  <Tab title="Underlying Side (ST)" icon="vault">
     <Steps>
       <Step title="Select a series">
-        Choose the series you want to trade. The same vToken can have multiple series with different maturity dates.
+        Review the maturity, ST/vToken discount, vault NAV behavior, and any underlying yield.
       </Step>
       <Step title="Open the ST orderbook">
-        Navigate to the ST orderbook for that series.
+        Navigate to the ST/vToken view for that series.
       </Step>
-      <Step title="Place a buy order">
-        Buy ST below 1 vToken with your vTokens. The vault already has a base APR, and the ST orderbook adds another APR on top through the discount. You can see the APR on the orderbook and either take a market order if there is enough liquidity or place a limit order.
-      </Step>
-      <Step title="Order fills">
-        Your order matches and ST lands in your wallet.
+      <Step title="Place an order">
+        Pay with vTokens to buy ST below 1 vToken. Economically, you are selling the future points exposure and keeping the underlying side without points exposure. Use a market order for immediate execution within your slippage limit, or a limit order for a selected APR.
       </Step>
       <Step title="Hold through maturity">
-        Hold ST through maturity to collect the principal + yield side of that series.
+        ST carries the underlying side, including any yield in the vault position but without the points exposure. For a zero-yield vault, it is simply the underlying-token side.
       </Step>
-      <Step title="Redeem at maturity">
-        When the series matures, redeem ST back into vToken.
+      <Step title="Redeem">
+        After maturity, redeem each ST for one vToken.
       </Step>
     </Steps>
   </Tab>
@@ -85,72 +73,75 @@ Read [Orderbook Guide](/learn/orderbook-guide) if you want a full mental model f
 
 ---
 
-## Exiting Before Maturity
+## Exit Before Maturity
 
-You don't have to wait. Sell your tokens on the orderbook at any time before maturity.
+You do not have to hold ST or EPT until maturity:
 
-- **Sell EPT** → receive vTokens. Seller keeps all accrued credits. Buyer starts from zero.
-- **Sell ST** → receive vTokens.
+- **Sell EPT** for vToken. You keep credits accumulated before the sale; the buyer starts accruing from the transfer.
+- **Sell ST** for vToken at the available market price.
+- **Recombine** equal amounts of ST and EPT into vToken where the app provides that action.
 
-To convert vTokens back to USDC, request a withdrawal (see below).
+Execution depends on available liquidity and can be subject to price impact, slippage, and fees.
 
 ---
 
-## Withdrawal
+## Withdraw vToken
 
-Withdrawals convert vTokens to USDC in two steps:
+Withdrawal returns the vault's input token.
 
 <Steps>
-  <Step title="Request">
-    Your vToken shares are burned. You stop earning yield and credits. The USDC you are owed is locked at current NAV.
+  <Step title="Review">
+    Check the network, input token, recipient, estimated amount, fees, and processing time.
   </Step>
-  <Step title="Finalize">
-    After the withdrawal delay shown on the withdrawal page, your USDC is released. The delay covers on-chain/exchange settlement.
+  <Step title="Request">
+    Submit the vToken amount. When the vTokens are burned, they stop carrying yield and accruing credits.
+  </Step>
+  <Step title="Complete">
+    Follow any finalization step shown by the app and receive the vault's input token when processing finishes.
   </Step>
 </Steps>
 
-**If you hold ST or EPT**, sell them on the orderbook first to receive vTokens, then withdraw. Or recombine ST + EPT into vTokens if you hold both.
+Withdrawal timing and availability are vault-specific. If you hold ST or EPT, first sell or recombine them into vToken.
 
 ---
 
-## After Maturity
-
-When a series reaches maturity, final NAV is locked in. No deadline to redeem — do it whenever you're ready.
+## At and After Maturity
 
 <Tabs>
   <Tab title="vToken Holders" icon="wallet">
-    Claim directly:
-
-    - **USDC** at the final NAV
-    - **CreditTokens** based on your credit share
+    vToken is not tied to a single series maturity. It remains the base vault share, follows the vault's NAV, and can continue accruing credits according to active periods.
   </Tab>
   <Tab title="ST Holders" icon="vault">
-    Redeem ST back into vToken at the final NAV. Your ST is burned.
+    Redeem ST 1:1 for vToken after maturity. Redemption burns the ST.
   </Tab>
   <Tab title="EPT Holders" icon="star">
-    Claim CreditTokens based on your accumulated credit share. A 25% claim fee is deducted from your CreditTokens.
+    EPT stops accruing new credits for that series at maturity. Claim available CreditTokens according to finalized periods and the fee shown for the series.
   </Tab>
 </Tabs>
 
-### What to Do with CreditTokens
+---
 
-CreditTokens are used for reward distribution. When a market maker receives rewards for a supported strategy, they can share those rewards with CreditToken holders through the ArcX claim flow.
+## Use CreditTokens
 
-See [CreditToken](/learn/credit-token) for the mechanics and [Risk Disclosure](/legal/risk-disclosure) for reward-distribution risks.
+CreditTokens are issued automatically from accrued credit shares after the market operator submits point weights on-chain. They are vault-specific, used for reward distribution, and persist across series from the same vault.
+
+Open **Swaps** to buy or sell CreditTokens using direct prices, market orders, or limit orders.
+
+Read [Trading CreditTokens](/learn/credit-token-trading) for the full flow.
 
 ---
 
 ## Quick Reference
 
-| Action | Before maturity | At or after maturity |
-|---|---|---|
-| Deposit USDC for vTokens | Yes | Yes |
-| Buy/sell EPT on orderbook | Yes | No |
-| Buy/sell ST on orderbook | Yes | No |
-| Credits accruing on EPT | Yes | No |
-| Withdraw vTokens | Yes | Yes |
-| Redeem ST into vToken | No | **Yes** |
-| Claim CreditTokens from EPT | As CreditTokens become available | **Yes** |
+| Action | When available |
+|---|---|
+| Deposit the vault input token for vToken | According to vault availability |
+| Buy or sell ST/EPT | Before the selected series matures |
+| Accrue credits on EPT | While held and before series maturity |
+| Redeem ST for vToken | At or after series maturity |
+| Claim CreditTokens | As credit periods become claimable |
+| Withdraw vToken | According to vault-specific rules |
+| Trade CreditTokens | Subject to market availability |
 
 ---
 
@@ -158,9 +149,9 @@ See [CreditToken](/learn/credit-token) for the mechanics and [Risk Disclosure](/
 
 <CardGroup cols={2}>
   <Card title="Credit Mathematics" icon="calculator" href="/deep-dives/credit-mathematics">
-    How credits accrue and how your CreditToken share is calculated.
+    How NAV, GCI, credit periods, and point weights determine CreditToken issuance.
   </Card>
-  <Card title="EPT Pricing" icon="chart-line" href="/deep-dives/ept-pricing">
-    How ST and EPT are priced and what drives the ST discount.
+  <Card title="Trading CreditTokens" icon="right-left" href="/learn/credit-token-trading">
+    The market and limit order flow for CreditTokens.
   </Card>
 </CardGroup>

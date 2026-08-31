@@ -8,10 +8,10 @@ icon: "book"
 
 | Token | What it is | Tradeable | Redeemable for | Scope |
 |---|---|---|---|---|
-| **vToken** | Base vault share. Earns yield + credits. | Yes, on existing AMMs like a normal ERC20 | USDC + CreditTokens | Per vault |
-| **ST** | Principal + yield side of a series | Yes (orderbook) | Redeems back into vToken at maturity | Per vault, per series |
-| **EPT** | Rewards side of a series | Yes (orderbook) | Claims CreditTokens based on credits | Per vault, per series |
-| **CreditToken** | Vault-specific token generated from accrued credits and used for reward distribution | Yes, subject to market availability | Reward sharing for that vault | Per vault, persists across series |
+| **vToken** | Base vault share | Yes, like a normal ERC20 | The vault's input token | Per vault |
+| **ST** | Underlying side of a series, including any yield but without points exposure | Yes (orderbook) | Redeems back into vToken at maturity | Per vault, per series |
+| **EPT** | Points side of a series | Yes (orderbook) | CreditTokens based on accrued credits | Per vault, per series |
+| **CreditToken** | Vault-specific token issued automatically after the market operator submits point weights on-chain | Yes (direct-price market) | Reward sharing for that vault | Per vault, persists across series |
 
 ### Split Equation
 
@@ -26,9 +26,9 @@ The matching engine enforces this parity internally when orders match.
 | Equation | Meaning |
 |---|---|
 | shares = deposit / NAV | vToken shares minted on deposit |
-| NAV = vault value / total shares | Per-share USDC value of the vault |
+| NAV = vault value / total shares | Per-share value of the vault |
 | 1 vToken = 1 ST + 1 EPT | Structural relationship (engine handles internally) |
-| your CreditTokens = Σ (your credits_w / total credits_w) × period_weight_w | CreditToken distribution by credit share and period weight |
+| your CreditTokens = Σ (your credits_w / total credits_w) × period_weight_w | CreditToken issuance by credit share and point weight |
 
 ### GCI (Global Credit Index)
 
@@ -38,14 +38,28 @@ $$\text{GCI increment} = \frac{\text{NAV}_{start} + \text{NAV}_{end}}{2} \times 
 
 $$\text{your credits} = \text{your shares} \times \text{GCI increment}$$
 
-Both vToken and EPT holders earn credits at the same rate. Credit accrual is on-chain; CreditToken minting uses period weights reported through the oracle.
+If NAV is constant at 1, this reduces to:
+
+$$\text{your credits} = \text{your shares} \times \text{days}$$
+
+Both vToken and EPT holders earn credits at the same rate. After the market operator submits point weights on-chain, the contracts automatically issue CreditTokens from the period's credit shares.
+
+---
+
+## Trading Models
+
+| Market | Quote | Order behavior |
+|---|---|---|
+| **ST/EPT** | APR | Series-specific trading against vToken |
+| **CreditToken** | Quote token per CreditToken | Market orders are fill-or-kill; limit orders can fill partially |
 
 ---
 
 ## Fees
 
 - **vToken performance fee** — a cut of the yield and CreditTokens distributed through the vToken
-- **EPT fee** — a fee on CreditTokens received by EPT holders for the rewards-side exposure ArcX provides
+- **EPT fee** — a fee on CreditTokens received by EPT holders for the points-side exposure ArcX provides
+- **CreditToken maker/taker fee** — a fee applied to CreditToken orderbook fills
 
 Exact values vary by market and can be seen in the app.
 
@@ -53,7 +67,7 @@ Exact values vary by market and can be seen in the app.
 
 ## Series
 
-**vToken** behaves like a vault share. You can deposit and withdraw as long as you account for lock-in windows and unwinding time shown on the market page.
+**vToken** behaves like a vault share. Deposits and withdrawals follow vault-specific terms.
 
 **ST** and **EPT** are created as part of fixed-maturity series.
 
@@ -66,7 +80,7 @@ Each vToken can have multiple series over time. Every series has:
 At maturity:
 
 - **ST** redeems back into vToken
-- **EPT** stops earning new exposure for that series and can be used to claim CreditTokens
+- **EPT** stops accruing credits for that series and can be used to claim CreditTokens
 - **vToken** continues as the base vault share
 
 ---
@@ -75,8 +89,8 @@ At maturity:
 
 | Step | What happens |
 |---|---|
-| **Lock-in** | New deposits stay in the vault for the lock-in window. During this time, vTokens are not burned and continue earning yield and credits. |
-| **Unwinding** | Once withdrawable, capital still needs time to unwind from exchange positions and return to the vault. vTokens are burned during this period. |
-| **Withdraw** | After unwinding completes, the USDC is available to withdraw from the vault. CreditTokens must be claimed separately from the Portfolio section in the app. |
+| **Review** | Confirm the vault's input token, network, recipient, fees, estimated amount, and processing time. |
+| **Request** | Submit vToken for withdrawal. Once burned, it stops carrying yield and accruing credits. |
+| **Complete** | Follow any finalization step shown in the app and receive the vault's input token when processing finishes. |
 
-Current lock-in and unwinding times are shown on the market page.
+Withdrawal availability and timing are vault-specific.

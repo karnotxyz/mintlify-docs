@@ -1,10 +1,10 @@
 ---
 title: "Risk Disclosure"
-description: "Key risks for vToken, ST, EPT, CreditTokens, market makers, rewards, and order execution."
+description: "Key risks for vaults, vToken, ST, EPT, CreditTokens, underlying protocols, and order execution."
 icon: "triangle-exclamation"
 ---
 
-Using ArcX involves smart-contract, market, credit, oracle, and rewards-program risk. Read this page before depositing, trading, or claiming.
+Using ArcX involves smart-contract, vault, market, credit, oracle, cross-chain, and points-program risk. Read this page before depositing, trading, or claiming.
 
 ## No Guaranteed Rewards
 
@@ -14,12 +14,12 @@ There is no guarantee that:
 
 - an underlying protocol conducts a TGE
 - an underlying protocol distributes rewards
-- a market maker receives rewards
-- a market maker funds the distribution contract
+- a vault or its configured recipient receives rewards
+- a distribution contract is funded
 - CreditTokens convert to reward tokens at any fixed ratio
 - rewards have market value
 
-CreditTokens are not exchange points and do not give holders a direct claim against any underlying protocol.
+CreditTokens are issued automatically after the market operator submits point weights on-chain. They are not points recorded by the underlying protocol and do not give holders a guaranteed direct claim against that protocol.
 
 ---
 
@@ -27,42 +27,39 @@ CreditTokens are not exchange points and do not give holders a direct claim agai
 
 Underlying points programs are controlled by their own protocols. They may change rules, adjust balances, apply multipliers, exclude accounts, claw back points, delay distributions, or end a program.
 
-Different market maker accounts can receive different treatment. A points-to-token conversion ratio for one account may differ from another account.
+Different vault or operator accounts can receive different treatment. A points-to-token conversion ratio for one account may differ from another account.
 
 ---
 
-## Market Maker Risk
+## Operator and Counterparty Risk
 
-Each vault depends on a market maker. The market maker borrows capital, runs the strategy, receives points or rewards in its own account, and funds the relevant CreditToken distribution contract when rewards are shared.
+Some vaults depend on an operator, borrower, custodian, liquidity provider, or other counterparty. Where applicable, that party may default, underperform, misconfigure a strategy, receive fewer rewards than expected, fail to fund a distribution, or be delayed in returning assets.
 
-ArcX uses Wildcat lending markets or related third-party lending infrastructure for the borrowing relationship behind a vault. These systems can introduce additional smart-contract, borrower, liquidity, and operational risks. ArcX does not control Wildcat protocol behavior or guarantee market maker repayment.
+Review the dependencies of the specific vault before depositing or trading.
 
-Users take the risk that a market maker:
+---
 
-- defaults on borrowing obligations
-- performs worse than expected
-- receives fewer points or rewards than expected
-- is excluded from a points program
-- does not fund the distribution contract
-- is delayed in funding the distribution contract
+## Cross-Chain Risk
 
-Market maker selection is part of the risk users take when choosing a vault or series.
+A vault can use more than one network. Cross-chain messages, token adapters, bridges, relayers, and source or destination chains can fail or be delayed.
+
+Sending to an unsupported network or incorrect recipient can cause permanent loss.
 
 ---
 
 ## Oracle Weight Risk
 
-CreditToken minting uses period weights submitted through an oracle process. Period weights are intended to reflect relative reward contribution across credit periods.
+CreditToken issuance uses point weights submitted on-chain by the market operator.
 
-Period weights depend on market maker information and other off-chain inputs. Incomplete or incorrect information can affect how many CreditTokens are minted for each period.
+Incomplete or incorrect information can affect the point weight and how many CreditTokens are issued for a period.
 
 ---
 
 ## Smart Contract And Execution Risk
 
-ArcX uses smart contracts for vault shares, ST, EPT, CreditTokens, order settlement, credit accounting, and reward distribution. Bugs, exploits, chain outages, bridge failures, or incorrect integrations can cause losses.
+ArcX uses smart contracts for vault shares, ST, EPT, CreditTokens, order settlement, credit accounting, and reward distribution. Bugs, exploits, chain outages, cross-chain failures, or incorrect integrations can cause losses.
 
-ArcX also uses an off-chain matching service to find candidate order matches. Settlement is checked on-chain against user APR, slippage, and order constraints, but the matching service can be unavailable or delayed.
+ArcX also uses off-chain matching services to find candidate order matches. Settlement is checked on-chain against applicable price, APR, slippage, and order constraints, but a matching service can be unavailable or delayed.
 
 ---
 
@@ -70,13 +67,15 @@ ArcX also uses an off-chain matching service to find candidate order matches. Se
 
 ST, EPT, and CreditTokens can trade with limited liquidity. Prices can move quickly, spreads can widen, and users may be unable to exit at the price they expect.
 
-EPT pricing depends on time remaining, expected CreditToken generation, expected reward value, market maker risk, and liquidity. These assumptions can change.
+EPT pricing depends on time remaining, expected CreditToken issuance, expected reward value, protocol risk, and liquidity. CreditToken prices are set directly by their markets.
+
+Market orders can fail, and limit orders can remain open or partially filled while funds stay escrowed.
 
 ---
 
 ## Regulatory And Access Risk
 
-ArcX access may be restricted by jurisdiction, sanctions screening, or interface rules. Regulatory treatment of DeFi, reward exposure, CreditTokens, and reward distributions can change.
+ArcX access may be restricted by jurisdiction, sanctions screening, or interface rules. Regulatory treatment of DeFi, points exposure, CreditTokens, and reward distributions can change.
 
 See [Restricted Jurisdictions](/legal/restricted-jurisdictions) for the current ArcX interface restrictions.
 

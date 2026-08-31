@@ -1,76 +1,81 @@
 ---
 title: "vToken"
-description: "The base vault share. Deposit USDC, earn yield, and accrue credits for supported reward programs."
+description: "The base vault share used to enter ST/EPT series, settle trades, and withdraw."
 icon: "circle-dollar-to-slot"
 ---
 
 ## What Is a vToken
 
-A vToken is a vault share. Each vault pairs a market maker with one or more perp DEXes. You deposit USDC, receive vToken shares, and get two forms of exposure:
+A **vToken** is a share of an ArcX vault. Each vault accepts a supported input token and connects that position to an underlying protocol or strategy.
 
-1. **Yield** — the market maker borrows your capital and returns value through either a fixed rate or a performance-fee split
-2. **Credits** — the strategy's activity participates in supported reward programs, and your holding time accrues credits that generate CreditTokens
+A vault may generate:
 
-One vToken per vault. Different vaults have different market makers, exchanges, and rates.
+1. **Yield** — value earned by the vToken, reflected either in its NAV or in the price of the input token itself
+2. **Credits** — participation tracked over time for a points program and used to determine CreditToken issuance
+
+Different vaults can use different input tokens, networks, protocols, yield models, points programs, and withdrawal rules.
 
 <Info>
-vToken is the simplest way to use ArcX. You earn yield and accrue credits without trading or managing anything. Just deposit and hold.
+vToken is the bridge between a vault and ArcX's markets. Deposit to receive vToken, then use it to acquire discounted ST or concentrated points exposure through EPT.
 </Info>
 
 ---
 
 ## Deposit
 
-Deposit USDC into a vault. You receive vToken shares at the current <Tooltip tip="Net Asset Value. Per-share USDC value of the vault.">NAV</Tooltip>:
+Deposit the input token shown on the vault page. You receive vToken shares at the current <Tooltip tip="The value of one vToken's vault position in the vault's accounting unit.">NAV</Tooltip>:
 
-$$\text{shares} = \frac{\text{deposit amount}}{\text{NAV}}$$
+$$\text{vToken shares} = \frac{\text{deposit value}}{\text{NAV}}$$
 
-First deposit into an empty vault mints shares 1:1 with USDC. After that, shares are priced by NAV.
+The app shows the supported network, input token, current NAV, expected vTokens, and any applicable fees before you confirm.
+
+NAV is the value of one vToken's vault position:
+
+- for a vault without underlying APY, NAV remains constant
+- when yield is added to the vToken position, NAV changes to reflect that value
+- when yield accrues through the input token itself, it can instead be reflected in that token's price
+- points are tracked separately and are not priced into NAV
 
 ---
 
 ## Yield
 
-Yield comes from the market maker borrowing vault capital and returning value through either a fixed rate or a performance-fee split. NAV tracks that value over time.
+The vToken gets the vault's yield. Depending on the vault design, that yield is reflected either in the NAV of the vToken or in the price of the input token itself.
 
-NAV only reflects hard assets (USDC value). It does not price in points — points are tracked separately through credits.
+ST retains exposure to that value because it redeems for vToken at maturity. EPT does not carry the yield. For a zero-yield vault, ST is simply the underlying-token side and NAV remains constant.
 
 ---
 
 ## Credits and CreditTokens
 
-Your vToken accrues **credits** while you hold it — the longer you hold and the more you hold, the bigger your share of CreditTokens for each period. Credits are tracked automatically on-chain.
+Your vToken accrues **credits** while you hold it. Credits measure both the size and duration of your position, using NAV to account for the position's value over time.
 
-Each period, CreditTokens are minted based on credit share and the period weight reported through the oracle. Market makers can share rewards received from the underlying protocol with CreditToken holders.
+Each credit period has a point weight. After the market operator submits that weight on-chain, the contracts automatically issue CreditTokens according to your share of the period's credits.
 
 <Info>
-Hold earlier, earn more. Earlier credit periods are locked in and cannot be diluted by later depositors.
+Earlier finalized credit periods cannot be diluted by users who enter later.
 </Info>
 
-![Weekly point distribution for vToken holders](/images/vtoken-weekly-distribution.png)
+If you buy or receive vTokens from another holder, your credit counter starts from the transfer time. The previous holder keeps the credits accumulated before the transfer.
 
-If you buy vTokens on secondary or receive them via transfer, your credit counter starts from zero. The previous holder keeps their accumulated credits.
-
-See [Credit Mathematics](/deep-dives/credit-mathematics) for the formula.
+See [Credit Mathematics](/deep-dives/credit-mathematics) for the NAV-based GCI formula and [CreditToken](/learn/credit-token) for the resulting token.
 
 ---
 
 ## Withdrawal
 
-Withdrawals depend on two timing constraints: **lock-in** and **unwinding**.
+A withdrawal converts vTokens back into the vault's input token.
 
 <Steps>
-  <Step title="Lock-in">
-    Operators usually need deposits to stay on the exchange for a minimum period so they can put the capital to work. Because of that, each vToken has a global lock-in window.
-
-    If the lock-in is 3 days, then the withdrawable amount is total supply minus deposits made in the last 3 days. During this lock-in period, your vTokens are **not** burned, and you continue earning yield and credits.
+  <Step title="Review the vault terms">
+    Check the network, input token, recipient, estimated amount, fees, and processing time shown in the app. Timing and availability are vault-specific.
   </Step>
-  <Step title="Unwinding">
-    Once your position is withdrawable, the operator still needs time to unwind exchange positions and return capital to the vault contract. Your vTokens are burned during this unwinding period.
+  <Step title="Request the withdrawal">
+    Submit the amount of vToken you want to withdraw. Once those vTokens are burned, they stop carrying yield and accruing credits.
   </Step>
-  <Step title="Withdraw">
-    After unwinding completes, the USDC is available to withdraw from the vault.
+  <Step title="Receive the input token">
+    Complete any finalization step shown in the app. The vault's input token is delivered to the selected recipient when processing completes.
   </Step>
 </Steps>
 
-You can find the current lock-in time and unwinding time on the market page.
+If you hold ST or EPT, first sell them for vToken or recombine matching amounts of ST and EPT. Review the vault page for the current withdrawal rules and timing.
