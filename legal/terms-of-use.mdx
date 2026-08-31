@@ -27,33 +27,41 @@ See [Restricted Jurisdictions](/legal/restricted-jurisdictions) for the current 
 
 ArcX documentation and interfaces are for informational and technical access purposes only. They are not investment, legal, tax, accounting, financial, or trading advice.
 
-You are responsible for evaluating every vault, market maker, series, order, token, and reward program before participating.
+You are responsible for evaluating every vault, underlying protocol, operator or counterparty where applicable, series, order, token, and points program before participating.
 
 ---
 
 ## Protocol Risk
 
-ArcX uses smart contracts and off-chain infrastructure. You accept the risk of smart-contract bugs, oracle errors, chain failures, transaction failures, liquidation or borrower default, market volatility, illiquidity, and unavailable interfaces.
+ArcX uses smart contracts, off-chain infrastructure, and third-party protocols. You accept the risk of smart-contract bugs, oracle errors, chain failures, cross-chain failures, transaction failures, liquidation or borrower default, market volatility, illiquidity, and unavailable interfaces.
 
-Order settlement is enforced by on-chain logic. The off-chain matching service can find candidate matches, but on-chain contracts verify APR bounds, slippage bounds, and settlement constraints before execution.
+Order settlement is enforced by on-chain logic. Off-chain matching services can find candidate matches, but on-chain contracts verify applicable price, APR, slippage, and settlement constraints before execution.
 
-ArcX uses third-party protocols and infrastructure, including [Wildcat lending markets](http://docs.wildcat.finance/), to support vault lending flows. By using ArcX interfaces, you acknowledge that your use involves those third-party systems and that you are responsible for reviewing any terms, disclosures, and risks that apply to them.
+A vault can depend on an input token, underlying protocol, strategy, operator, borrower, custodian, bridge, relayer, or other integration. You are responsible for reviewing the terms, disclosures, and risks that apply to the systems used by the vault.
 
 ---
 
 ## Rewards Are Not Promised
 
-CreditTokens are used for reward distribution when a market maker shares rewards received from an underlying protocol.
+CreditTokens are issued automatically from finalised ArcX credit shares after the market operator submits point weights on-chain. They can be used by a vault's configured reward-distribution logic.
 
-No TGE, airdrop, reward amount, conversion ratio, eligibility, timing, transferability, or market value is promised. CreditTokens are not exchange points and do not create a direct claim against any underlying protocol.
+No TGE, airdrop, reward amount, conversion ratio, eligibility, timing, transferability, or market value is promised. CreditTokens are not points recorded by the underlying protocol and do not create a guaranteed direct claim against that protocol.
 
 ---
 
-## Market Maker And Distribution Risk
+## CreditToken Trading
 
-Vaults depend on market makers. A market maker may default, underperform, receive fewer rewards than expected, be excluded from a rewards program, or fail to fund a CreditToken distribution contract.
+CreditToken prices are set by market participants. Market orders can fail, and limit orders can remain open or partially filled while funds stay escrowed.
 
-You choose the market maker and series you want exposure to. You bear the risks of that choice.
+An interface metric such as “cost per point” is shorthand for comparing market exposure. It does not mean one CreditToken equals one underlying-protocol point or guarantee a future reward value.
+
+---
+
+## Operator And Distribution Risk
+
+Some vaults depend on operators or counterparties. They may default, underperform, receive fewer rewards than expected, be excluded from a points program, or fail to fund a CreditToken distribution contract.
+
+You choose the vault and series you want exposure to. You bear the risks of that choice.
 
 ---
 
@@ -67,6 +75,6 @@ ArcX interfaces may use geofencing, wallet screening, and other controls to rest
 
 ## No Warranty
 
-ArcX documentation, interfaces, and protocol-related information are provided as-is. No warranty is given that any interface, contract, market, orderbook, oracle, vault, distribution contract, or reward program will work without error or interruption.
+ArcX documentation, interfaces, and protocol-related information are provided as-is. No warranty is given that any interface, contract, market, orderbook, oracle, vault, cross-chain system, distribution contract, or points program will work without error or interruption.
 
 To the fullest extent permitted by law, you are responsible for all losses, taxes, legal obligations, and reporting obligations arising from your use of ArcX.

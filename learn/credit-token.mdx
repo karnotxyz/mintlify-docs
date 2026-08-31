@@ -1,47 +1,63 @@
 ---
 title: "CreditToken"
-description: "The token generated from accrued credits and used for reward distribution."
+description: "A vault-specific token generated from accrued credits and used for reward distribution."
 icon: "coins"
 ---
 
 ## What Is a CreditToken
 
-Each vault has its own **CreditToken**. CreditTokens are generated from credits earned by holding vToken or EPT.
+Each vault has its own **CreditToken**. vToken and EPT holders accrue credits over time. After the market operator submits a point weight on-chain for a credit period, the contracts automatically issue CreditTokens according to each holder's share of that period's credits.
 
-Credits measure participation over time. CreditTokens are a way to realize expected rewards, including rewards from points programs, into an actual token across periods.
+Credits measure participation over time. CreditTokens turn the resulting, period-weighted allocation into a transferable token that can be used by the vault's reward-distribution logic.
 
-CreditTokens are not exchange points and do not represent a direct claim against the underlying protocol or any fixed amount of points.
+CreditTokens are:
+
+- specific to one vault
+- fungible across series derived from that same vault
+- issued automatically after the market operator submits point weights on-chain
+- allocated from finalised on-chain credit shares
+- separate from the underlying token, ST, and EPT
+
+CreditTokens are not points recorded by the underlying protocol and do not guarantee a TGE, redemption ratio, reward value, or direct contractual claim against that protocol.
 
 ---
 
-## How CreditTokens Work
+## How CreditTokens Are Issued
 
-CreditTokens are created across credit periods so credits can receive different weights over time. This lets the protocol account for the fact that earlier participation can matter more than later participation, or that different periods can contribute differently to eventual rewards.
-
-For protocols with points programs, these credit periods can be mapped to the exchange's point-calculation cadence. If a market calculates points weekly, ArcX can use weekly credit periods.
+Credit periods let different parts of a program receive different weights. This preserves each holder's participation in earlier periods and prevents later users from diluting periods that have already been finalized.
 
 For each period:
 
-1. vToken and EPT holders accrue credits based on capital × time
-2. a period weight is submitted through the oracle
-3. CreditTokens are minted to eligible holders based on their credit share and that period weight
+1. vToken and EPT holders accrue credits based on position value multiplied by time
+2. the market operator submits that period's point weight on-chain
+3. the contracts automatically issue CreditTokens according to each holder's share of that period's credits
 
-For protocols with points programs, this can be thought of as minting more CreditTokens when a period generated more points, and fewer CreditTokens when a period generated fewer points. Early users keep the benefit of earlier periods, and later users do not dilute them.
+For a points program, period weights can reflect the relative contribution of each program period. If one period contributes more than another, it can generate more CreditTokens. The exact relationship depends on the vault and program; it is not a universal points-to-CreditToken conversion.
+
+See [Credit Mathematics](/deep-dives/credit-mathematics) for the formula.
 
 ---
 
 ## Reward Distribution
 
-If rewards are received by the market maker later in the underlying protocol, the market maker can share those rewards with CreditToken holders.
+If a vault's underlying protocol or reward arrangement later makes rewards available, those rewards can be distributed to CreditToken holders through the configured claim logic.
 
-CreditToken holders then claim according to the relevant claim logic.
+Reward funding and eligibility are vault-specific. Review the vault page for the relevant program, oracle assumptions, distribution source, fees, and claim terms.
 
-Different markets have different market makers, rewards programs, oracle weights, and fees. Review the market page and [Risk Disclosure](/legal/risk-disclosure) before participating.
+There is no guarantee of a TGE, airdrop, reward amount, conversion ratio, eligibility decision, distribution date, redemption value, or market value. Read the [Risk Disclosure](/legal/risk-disclosure) before participating.
+
+---
+
+## Trading CreditTokens
+
+Once issued, CreditTokens can be bought or sold at a direct price in the market's quote token. Trading transfers existing CreditTokens; it does not trigger new issuance.
+
+Read [Trading CreditTokens](/learn/credit-token-trading) for order behavior, fees, and risks.
 
 ---
 
 ## Across Series
 
-ST and EPT are created fresh for each series. CreditTokens are specific to a vault and accumulate across multiple series of that same vault.
+ST and EPT are created separately for each series. CreditTokens persist at the vault level.
 
-That means CreditTokens generated from different series of the same vault are fungible with each other.
+CreditTokens issued through different series of the same vault are fungible with each other. CreditTokens from different vaults are distinct and should be evaluated separately.

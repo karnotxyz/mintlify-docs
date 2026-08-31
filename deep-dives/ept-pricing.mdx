@@ -10,11 +10,11 @@ If you want the full matching math behind ST/EPT pricing, read [Orderbook Mechan
 
 ## How ST and EPT Are Priced
 
-**NAV** is the per-share USDC value of the vault. It grows as the market maker returns value through the market's configured model, whether that is a fixed rate or a performance-fee split. NAV does not respond to orderbook activity.
+**NAV** is the value of one vToken's vault position in the vault's accounting unit. It remains constant for a vault without underlying APY. Yield earned by vToken is reflected either in its NAV or in the price of the input token itself. NAV does not respond to orderbook activity.
 
-**ST** and **EPT** are the principal + yield and rewards-side components of a vToken. They trade on the orderbook priced in vTokens.
+**ST** and **EPT** are the underlying-token and points-side components of a vToken. ST retains exposure to any yield earned by vToken because it redeems for vToken at maturity. They trade on the orderbook priced in vTokens.
 
-EPT buyers pay for the rewards side of the vToken. Whatever they pay, the remainder is what ST is worth. If ST trades at \$0.98 near a NAV of 1.00, the market is valuing EPT at roughly \$0.02. The more someone pays for EPT, the cheaper ST gets — and vice versa.
+EPT buyers pay for the points side of the vToken. Whatever they pay, the remainder is what ST is worth. If ST trades at 0.98 vToken, the market is valuing EPT at roughly 0.02 vToken. The more someone pays for EPT, the cheaper ST gets — and vice versa.
 
 The matching service and settlement contracts keep this relationship tight. When an ST buy and EPT buy arrive together, settlement can split vTokens into ST + EPT. When an ST sell and EPT sell arrive together, settlement can recombine ST + EPT into vTokens.
 
@@ -22,27 +22,31 @@ The matching service and settlement contracts keep this relationship tight. When
 
 ## Returns Framing
 
-The natural question is "is \$0.02 too expensive?" The better question: **what is the implied return?**
+The natural question is "is 0.02 vToken too expensive?" The better question: **what is the implied return?**
 
-EPT earns credits that generate CreditTokens. Its value depends on how many CreditTokens you earn and what rewards those CreditTokens may receive down the line in the protocol.
+EPT earns credits that determine CreditToken issuance. Its value depends on how many CreditTokens you earn and what those CreditTokens may be worth.
+
+<Info>
+EPT uses the APR-priced ST/EPT orderbook. The separate [CreditToken market](/learn/credit-token-trading) uses a direct quote-token-per-CreditToken price.
+</Info>
 
 ### Worked Example
 
-You use 5 vTokens to buy 250 EPT at \$0.02 each during a 60-day series:
+You use 5 vTokens to buy 250 EPT at 0.02 vToken each during a 60-day series:
 
 | Step | What happens |
 |---|---|
-| **Buy** | 250 EPT for 5 vTokens (\$5 at NAV) |
+| **Buy** | 250 EPT for 5 vTokens |
 | **Hold** | You accrue credits over the series. Your credit share earns 55 CreditTokens. |
 | **Claim** | Series matures. Let's assume a 10% EPT fee (actual value can be seen on the market page). You receive 50 CreditTokens. |
-| **Rewards** | In this example, your 50 CreditTokens are worth \$0.20 each when rewards are shared. |
-| **Return** | \$10 out on \$5 in = **100% return over 60 days** |
+| **Outcome** | In this example, each of the 50 CreditTokens is later valued at 0.20 vToken. |
+| **Return** | 10 vTokens of value on 5 vTokens spent = **100% return over 60 days** |
 
 ## Leverage and Price
 
 ### EPT Price Decay
 
-If EPT is \$0.02 with 8 weeks left, you earn credits for all 8 weeks. If EPT is still \$0.02 with 2 weeks left, you earn credits for just 2 weeks. Same price, very different return.
+If EPT is 0.02 vToken with 8 weeks left, you earn credits for all 8 weeks. If EPT is still 0.02 vToken with 2 weeks left, you earn credits for just 2 weeks. Same price, very different return.
 
 In practice, EPT price decays as the series progresses because fewer credits remain to be earned. As mentioned in [Orderbook Mechanics](/deep-dives/orderbook-mechanics), this is why orders are priced in APR and not absolute price, since APR remains stable as time passes.
 
@@ -71,8 +75,8 @@ And this is also why quoting the orderbook in APR is important: absolute token s
 | Factor | Effect on EPT Price |
 |---|---|
 | **Time remaining** | More time = more credits to earn = higher price |
-| **Expected CreditToken value** | Higher expected reward value = higher price |
-| **Rewards-side demand** | More buyers on EPT orderbook = higher price |
+| **Expected CreditToken value** | Higher expected CreditToken value = higher price |
+| **Points-side demand** | More buyers on EPT orderbook = higher price |
 
 ---
 

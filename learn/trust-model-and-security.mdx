@@ -8,37 +8,37 @@ ArcX is designed so that asset ownership, token balances, series settlement, and
 
 Two high-level notes:
 
-- **Audits:** All ArcX contracts have been audited by Nethermind. The report is available publicly.
+- **Audits:** Nethermind has reviewed our Cairo and Solidity code at commit `8b97dda00f072cac05047a3855afcc91f373d764`.
 - **Source availability:** Contracts are closed source at the beginning. They will be opened up over time once the system has seen enough production use, confidence, and battle testing.
 
 ---
 
 ## Audit
 
-All ArcX contracts have been audited by Nethermind.
+Nethermind has reviewed our Cairo and Solidity code at commit `8b97dda00f072cac05047a3855afcc91f373d764`.
 
-Read the full report: [NM_0901_arcx_karnot_FINAL.pdf](https://github.com/NethermindEth/PublicAuditReports/blob/main/NM_0901_arcx_karnot_FINAL.pdf)
+Read [Audits](/learn/audits) for the authoritative file list, reviewed commit, findings summary, and full report.
 
 ---
 
-## vToken
+## vToken and Vault Dependencies
 
-The **vToken** contracts are on-chain and self-custodial.
+The vToken layer records the vault-share position. Depending on the vault design, on-chain state can include:
 
-- user balances, transfers, supply, and NAV all live on-chain
-- credit computation also happens on-chain
-- ArcX does not take custody of user funds inside the vToken system
+- balances, transfers, and total supply
+- NAV or equivalent vault accounting
+- credit-period checkpoints and holder credits
+- deposit and withdrawal state
 
-Today, ArcX uses [**Wildcat**](https://docs.wildcat.finance/) to lend capital to market makers. The movement of funds from Starknet into Wildcat is handled through smart contracts, not through ArcX-controlled wallets.
+The vToken does not remove risks inherited from the position behind it. A vault may rely on:
 
-That means ArcX does not become the custodian of funds during the lending flow. But users are still taking **borrower default risk** through the underlying market maker relationship.
+- the supported input token and its issuer or design
+- an underlying protocol or strategy
+- an operator, borrower, custodian, or other counterparty where applicable
+- cross-chain messaging, token adapters, bridges, or relayers
+- withdrawal processing and available liquidity
 
-ArcX partners with market makers and lists them on the platform, but ArcX does not guarantee borrower performance. If a market maker fails to repay or defaults on its borrowing obligations, that risk ultimately sits with the users who chose to allocate capital to that vToken.
-
-Users should treat a vToken as both:
-
-- an on-chain self-custodial position
-- an economic exposure to the creditworthiness and execution quality of the underlying market maker
+Review these dependencies on the vault page. ArcX token accounting cannot guarantee the solvency, availability, or correct behavior of an external system.
 
 ---
 
@@ -70,33 +70,50 @@ So ArcX cannot simply route user orders to arbitrary prices, force worse APRs, c
 
 ---
 
-## Credit Oracle and Reward Distribution
+## CreditToken Trading
 
-Credits are computed on-chain, but the rewards side still depends on off-chain information and market maker reward delivery.
+The CreditToken market uses an off-chain matcher with on-chain escrow and settlement:
 
-ArcX uses period weights to reflect relative reward contribution across credit periods. Those weights are submitted through an oracle process and are used to determine how many CreditTokens are minted for each period.
+- limit orders escrow the offered token and can fill partially
+- cancelling returns the unmatched escrowed remainder
+- market orders are fill-or-kill and enforce quote or slippage bounds
+- market-specific fees are applied during settlement
 
-The oracle does not assign rewards to individual users. It reports period weights, and the contracts apply those weights to on-chain credit balances.
-
-When rewards are shared, the relevant market maker funds the CreditToken distribution contract with rewards received for that strategy. CreditToken holders claim from that contract according to the contract logic.
-
-This means users are taking several risks:
-
-- the underlying protocol controls its own points program and reward allocation
-- period weights depend on information from the market maker
-- the market maker must receive rewards and fund the distribution contract
-
-See [Risk Disclosure](/legal/risk-disclosure) for the full list of CreditToken and reward-distribution risks.
+The matcher can affect availability and execution timing, while the contracts enforce the submitted order constraints. See [Trading CreditTokens](/learn/credit-token-trading) for the user flow.
 
 ---
 
-## What Users Should Actually Check
+## Credit Oracle and Reward Distribution
 
-Before allocating capital, users should evaluate:
+Credits are computed from on-chain balances, NAV, and time. The market operator submits a point weight on-chain for each credit period.
 
-- the market maker behind the vToken
-- the Wildcat borrowing setup and borrower risk
-- the terms of the specific series they are trading
-- the current credit-oracle and reward-distribution assumptions
+The market operator does not allocate tokens to individual users. After the point weight is submitted, the contracts automatically apply it to the period's on-chain credit shares and issue CreditTokens.
 
-The smart-contract layer makes custody and settlement transparent. It does not remove the need to evaluate counterparty risk, operational risk, and oracle trust.
+Off-chain trust remains because:
+
+- the underlying protocol controls its own points program
+- period weights can depend on external program data
+- data can be delayed, incomplete, revised, or incorrect
+- reward funding and claim eligibility depend on the vault's configured distribution arrangement
+
+A CreditToken is not a guaranteed direct claim against the underlying protocol.
+
+---
+
+## Administrative and Upgrade Risk
+
+ArcX contracts and vault integrations can include privileged roles for upgrades, configuration, pausing, oracle submissions, market activation, fee settings, or operations.
+
+Those controls can help respond to incidents, but they also create key-management, governance, and configuration risk. A pause or upgrade can delay deposits, withdrawals, claims, or trading.
+
+---
+
+## What to Check
+
+Before depositing or trading, evaluate:
+
+- the vault's input token, underlying protocol, yield behavior, and withdrawal terms
+- operator, counterparty, custody, and cross-chain dependencies where applicable
+- credit periods, point weights, and reward-distribution assumptions
+
+Read the [Risk Disclosure](/legal/risk-disclosure) for the complete user-facing risk summary.

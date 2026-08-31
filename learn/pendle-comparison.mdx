@@ -1,6 +1,6 @@
 ---
 title: "ArcX vs Pendle"
-description: "If you know Pendle, here is ArcX in terms you already understand."
+description: "If you know Pendle, here is ArcX's vault and points decomposition in familiar terms."
 icon: "scale-balanced"
 ---
 
@@ -10,54 +10,46 @@ icon: "scale-balanced"
 
 ## Quick Mapping
 
-| Pendle | ArcX | Key Difference |
+| Pendle | ArcX | Key difference |
 |---|---|---|
-| **SY** (Standardized Yield) | **vToken** | Pendle wraps external yield sources. ArcX curates its own vaults (`vTokens`) today, with plans to expand to external vaults over time. |
-| **PT** (Principal Token) | **ST** (Strategy Token) | PT is just principal. ST is **principal + yield**. |
-| **YT** (Yield Token) | **EPT** (Expected Points Token) | YT is **interest + rewards**. EPT is the **rewards side** — the yield has already been given to ST. |
-| Pendle AMM + orderbook | ST/vToken + EPT/vToken orderbook | Pendle supports both AMM and orderbook liquidity. ArcX uses an orderbook today and may add an AMM later if demand justifies it. |
+| **SY** (Standardized Yield) | **vToken** | Directly analogous vault-share wrappers. |
+| **PT** (Principal Token) | **ST** (Strategy Token) | PT isolates principal. ST carries the underlying side, including any yield but without points exposure. |
+| **YT** (Yield Token) | **EPT** (Expected Points Token) | YT carries interest and rewards. EPT carries only the points side; ST retains exposure to any yield earned by vToken. |
+| Pendle AMM and orderbook | ST/vToken and EPT/vToken orderbook | Pendle supports both AMM and orderbook liquidity. ArcX uses an orderbook today and may add an AMM later if demand justifies it. |
+| Protocol-managed points distribution | ArcX-managed on-chain accounting | Pendle requires protocol-side integration for points distribution. ArcX requires no changes to the underlying protocol and handles the accounting through its own on-chain logic. |
+| No direct equivalent | **CreditToken** | A tradeable, vault-specific token issued automatically after the market operator submits point weights on-chain. |
 
-## The Big Difference
+## The Main Difference
 
-The biggest difference is in what gets separated.
-
-Pendle splits a position into:
+Pendle splits a yield-bearing position into:
 
 - **PT** = principal
 - **YT** = interest + rewards
 
-ArcX splits a position into:
+ArcX splits a vault position into:
 
-- **ST** = principal + interest
-- **EPT** = rewards side
+- **ST** = the underlying-token side, including any yield but without points exposure
+- **EPT** = the points side
 
-ArcX isolates the rewards side into **EPT**, so EPT buyers do not need to pay for yield exposure they do not want.
+This remains true for both yield-bearing and zero-yield vaults. If a vault has no underlying APY, NAV remains constant and ST is simply the underlying-token side.
 
-**That gives EPT buyers higher leverage for the same capital.**
+By isolating the points side, an EPT buyer does not also pay for the yield exposure they do not want.
 
-### Example
+### Illustrative Example
 
-Ignoring the time value of capital and the cost of having capital locked until maturity, the comparison looks like this:
+Assume a vault position:
 
-Assume a strategy generates:
+- earns 5% APR
+- is expected to contribute to a points program
+- has one year remaining in the selected series
 
-- **5% APR**
-- **1 point for every \$100** in the strategy
-- **1 year to maturity**
-- **points priced at \$0.20 per point**
+In a principal/yield split, the points buyer may need to buy both the yield stream and points exposure. In ArcX, the EPT buyer pays only for the points side; ST retains exposure to the underlying and the 5% yield earned by vToken.
 
-In Pendle, the buyer is buying **interest + rewards** together through YT. To get exposure to 1 expected point reward, they are also paying for the yield stream:
+### Integration Model
 
-- Yield value: **\$5.00**
-- Point value: **\$0.20**
-- **Total paid = \$5.20**
+On Pendle, points distribution is handled by the underlying protocol and requires protocol-side integration work.
 
-In ArcX, the EPT buyer is only buying the rewards side:
-
-- Point value: **\$0.20**
-- **Total paid = \$0.20**
-
-So for the same capital, ArcX lets an EPT buyer get more concentrated expected-reward exposure because they are not paying for the yield component.
+ArcX does not require changes to the underlying protocol. ArcX can integrate a protocol directly, track user credits, apply the market operator's point weights, and issue CreditTokens through on-chain logic.
 
 ---
 
@@ -67,5 +59,8 @@ So for the same capital, ArcX lets an EPT buyer get more concentrated expected-r
 |---|---|---|
 | Get principal + yield exposure on a yield-bearing asset | Buy PT at a discount | Buy ST at a discount |
 | Get leveraged yield exposure | Buy YT | Not available |
-| Get pre-reward rewards-side exposure | Possible, but leverage is lower for the same capital because YT also includes yield | Buy EPT on the orderbook |
-| Separate strategy PnL from rewards | Not possible | Buy ST or EPT independently |
+| Get pre-reward points exposure | Possible, but leverage is lower for the same capital because YT also includes yield | Buy EPT on the orderbook |
+| Separate underlying return from points | Not possible | Buy ST or EPT independently |
+| Trade rewards/points | No direct equivalent in this mapping | Trade CreditTokens in a direct-price market |
+
+Read [Trading CreditTokens](/learn/credit-token-trading) for the separate CreditToken market.

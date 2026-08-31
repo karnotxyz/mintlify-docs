@@ -2,7 +2,7 @@
   "$schema": "https://mintlify.com/docs.json",
   "theme": "mint",
   "name": "ArcX",
-  "description": "ArcX wraps perp DEX strategies into a vault token that earns yield and credits for supported reward programs. Split into ST and EPT for isolated exposure.",
+  "description": "ArcX strips the points exposure from vault positions, allowing the underlying and points sides to trade independently.",
   "favicon": "/favicon.png",
   "logo": {
     "light": "/logo/arc-logo.png",
@@ -89,6 +89,7 @@
             "pages": [
               "learn/user-guide",
               "learn/orderbook-guide",
+              "learn/credit-token-trading",
               "learn/pendle-comparison"
             ]
           },
