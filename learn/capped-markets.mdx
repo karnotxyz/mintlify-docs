@@ -1,0 +1,68 @@
+---
+title: "Capped Markets"
+description: "Fully collateralized CreditToken markets with a fixed maximum settlement price per point."
+icon: "shield-check"
+---
+
+Capped Markets are CreditToken markets where every point minted is backed 1:1 by USD collateral, up to a fixed price cap. This removes counterparty and shortfall risk from the market: settlement is always fully funded, regardless of how the underlying token performs at TGE.
+
+Our first Capped Market is for Variational's **$VAR** points.
+
+---
+
+## Why Capped Markets vs. OTC
+
+- **No SAFE or multisig setup.** OTC points trades typically require both sides to set up a custom multisig and confirm wallet addresses before a deal can begin. On ArcX, you trade directly, no setup required.
+- **No counterparty coordination.** OTC settlement depends on a specific buyer and seller pair completing every step together. On ArcX, the market itself is the counterparty.
+- **Lower fees.** 0.25% for makers, 0.75% for takers, versus the 1.5% typically charged on OTC points trades.
+- **Full exit liquidity before TGE.** OTC positions are generally locked until settlement. On ArcX, you can buy or sell your position at any time before TGE.
+
+---
+
+## How Collateral Works
+
+Each point minted in a Capped Market is backed by collateral equal to the market's price cap. Collateral is locked in a smart contract for that market.
+
+Collateral for this market is held in a smart contract, viewable on chain [here](https://voyager.online/contract/0x44cc5c53445647ba3fdeef76ae11b108050be535398033609a36948a3f42061).
+
+To mint additional points, additional collateral is deposited at the same ratio. The collateral ratio is fixed for the life of a given market and does not change after launch.
+
+---
+
+## Settlement
+
+Settlement is determined once the underlying token's TGE occurs and a reference value per point can be established.
+
+- **Reference value at or below the cap.** Holders receive the underlying token directly, claimable on the site. Delivery targets within 1 hour of TGE, excluding delays caused by chain downtime or server issues outside ArcX's control.
+- **Reference value above the cap.** Holders can claim the fixed cap price per point, paid in USDC from the market's collateral reserve.
+- **No deliverable token.** If the underlying token has no deliverable version on a supported chain at settlement, payout is based on a 30 minute TWAP price delivered in USDC, capped at the same fixed price per point.
+
+In every branch, payout per point never exceeds the fixed cap, and the reserve is sized to cover it in full.
+
+---
+
+## Vesting
+
+If the underlying token's allocation vests over time, each tranche is settled independently, priced at the time it unlocks, rather than all at once against a single reference value.
+
+The token amount per point is fixed and publicly known in advance.
+
+For each tranche:
+
+1. At the moment of unlock, a reference value is established using a 30 minute TWAP price ending at the unlock.
+2. If that reference value is at or below the cap, the holder receives the proportional token amount for that tranche directly.
+3. If it's above the cap, the holder receives the proportional amount in USDC instead, priced at the cap.
+
+This repeats independently for each tranche until the full allocation has settled. A tranche unlocking while the token is priced above the cap settles in capped USDC, while a later tranche unlocking at or below the cap settles in real tokens. Each tranche is judged on its own.
+
+<Note>
+The market operator may, at any time, settle all tokens due to holders at once, without waiting for upcoming tranches.
+</Note>
+
+---
+
+## Trading
+
+Points in a Capped Market trade like any other CreditToken, on the ArcX orderbook against USDC, with standard maker and taker fees. Holders can buy or sell at any time before settlement. There is no lock-up and no counterparty coordination required.
+
+See [Trading CreditTokens](/learn/credit-token-trading) for order types.
