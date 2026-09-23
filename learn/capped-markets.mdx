@@ -45,14 +45,19 @@ In every branch, payout per point never exceeds the fixed cap, and the reserve i
 
 If the underlying token's allocation vests over time, each tranche is settled independently, priced at the time it unlocks, rather than all at once against a single reference value.
 
+The token amount per point is fixed and publicly known in advance.
+
 For each tranche:
 
-1. The token amount per point is fixed and publicly known in advance.
-2. At the moment of unlock, a reference value is established using a 30 minute TWAP price ending at the unlock.
-3. If that reference value is at or below the cap, the holder receives the proportional token amount for that tranche directly.
-4. If it's above the cap, the holder receives the proportional amount in USDC instead, priced at the cap.
+1. At the moment of unlock, a reference value is established using a 30 minute TWAP price ending at the unlock.
+2. If that reference value is at or below the cap, the holder receives the proportional token amount for that tranche directly.
+3. If it's above the cap, the holder receives the proportional amount in USDC instead, priced at the cap.
 
 This repeats independently for each tranche until the full allocation has settled. A tranche unlocking while the token is priced above the cap settles in capped USDC, while a later tranche unlocking at or below the cap settles in real tokens. Each tranche is judged on its own.
+
+<Note>
+The market operator may, at any time, settle all tokens due to holders at once, without waiting for upcoming tranches.
+</Note>
 
 ---
 
